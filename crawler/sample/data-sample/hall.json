@@ -1,0 +1,36 @@
+[
+    {
+        "movie_id": "movieId1",
+        "theater_id": "0056",
+        "name": "1관",
+        "max_chair": "총 232석",
+        "type": "2D(자막)",
+        "times": [
+            {
+                "time": "13:55",
+                "chair": "132석"
+            },
+            {
+                "time": "19:00",
+                "chair": "128석"
+            }
+        ]
+    },
+    {
+        "movie_id": "movieI2",
+        "theater_id": "0056",
+        "name": "6관",
+        "max_chair": "총 100석",
+        "type": "2D(자막)",
+        "times": [
+            {
+                "time": "13:55",
+                "chair": "50석"
+            },
+            {
+                "time": "19:00",
+                "chair": "40석"
+            }
+        ]
+    }
+]
