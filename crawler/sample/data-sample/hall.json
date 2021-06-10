@@ -1,35 +1,31 @@
 [
     {
-        "movie_id": "movieId1",
+        "movie_id": "83115",
         "theater_id": "0056",
-        "name": "1관",
-        "max_chair": "총 232석",
-        "type": "2D(자막)",
-        "times": [
+        "name": "4관 8층[LCK관]",
+        "max_chair": "총 124석",
+        "type": "2D",
+        "time_table": [
             {
-                "time": "13:55",
-                "chair": "132석"
+                "screencode": "004",
+                "playymd": "20210610",
+                "playstarttime": "1600",
+                "playendtime": "1833",
+                "seatremaincnt": 67
             },
             {
-                "time": "19:00",
-                "chair": "128석"
-            }
-        ]
-    },
-    {
-        "movie_id": "movieI2",
-        "theater_id": "0056",
-        "name": "6관",
-        "max_chair": "총 100석",
-        "type": "2D(자막)",
-        "times": [
-            {
-                "time": "13:55",
-                "chair": "50석"
+                "screencode": "004",
+                "playymd": "20210610",
+                "playstarttime": "1850",
+                "playendtime": "2123",
+                "seatremaincnt": 70
             },
             {
-                "time": "19:00",
-                "chair": "40석"
+                "screencode": "004",
+                "playymd": "20210610",
+                "playstarttime": "2140",
+                "playendtime": "2413",
+                "seatremaincnt": 75
             }
         ]
     }
