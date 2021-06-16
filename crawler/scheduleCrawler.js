@@ -1,5 +1,5 @@
 const {Builder, By, Key, until, Capabilities} = require('selenium-webdriver');
-const { getJsonData, appendDataInJson } = require('./fileWriter');
+const { getJsonData, appendDataInJson } = require('./fileController');
 
 const getLink = (codeName, a, t, d) => {
     return `http://www.cgv.co.kr/common/showtimes/iframeTheater.aspx?${codeName}=${a}&theatercode=${t}&date=${d}`;

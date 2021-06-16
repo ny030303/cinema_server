@@ -1,5 +1,5 @@
 const {Builder, By, Key, until, Capabilities} = require('selenium-webdriver');
-const { getJsonData, appendDataInJson } = require('./fileWriter');
+const { getJsonData, appendDataInJson } = require('./fileController');
 
 (async function example() {
     // let driver = await new Builder().forBrowser('chrome').build();
