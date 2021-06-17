@@ -1,6 +1,7 @@
 const {Builder, By, Key, until, Capabilities} = require('selenium-webdriver');
 const { getJsonData, appendDataInJson, appendLinkToTxt } = require('./fileController');
 const { downloadImageToUrl } = require('./imgDownload');
+const {init:dbInit,dbQuery} = require("../models");
 
 (async function init() {
     const chrome = require('selenium-webdriver/chrome');
@@ -10,6 +11,7 @@ const { downloadImageToUrl } = require('./imgDownload');
     var driver = new Builder().withCapabilities(Capabilities.chrome()).build();
 
     try {
+        await dbInit();
         let movieData = await getJsonData("movie/movie.json");
 
         // Navigate to Url
@@ -42,7 +44,7 @@ const { downloadImageToUrl } = require('./imgDownload');
                     appendLinkToTxt(["movie/otherMovieLink.txt", "Can't search: http://www.cgv.co.kr/movies/detail-view/?midx="+ mId + "\n"], (res)=> {});
                 } else {
                     let movieInfo = {
-                        "id": mId,
+                        "movie_id": mId,
                         "title": await (await driver.findElement(By.css(".box-contents .title > strong"))).getText(),
                         "poster_img": imgLink,
                         "play_time": Number((await onView[1].getText()).split(",")[1].slice(0,-1).trim()),
@@ -60,6 +62,10 @@ const { downloadImageToUrl } = require('./imgDownload');
                     };
                     console.log(movieInfo);
                     appendDataInJson(["movie/movie.json", movieInfo, movieData], (res)=> {});
+                    let sql = "INSERT INTO movie VALUES (?,?,?,?,?, ?,?,?,?,?)";
+                    let params = [movieInfo.movie_id, movieInfo.title, movieInfo.poster_img, movieInfo.play_time, movieInfo.director, 
+                                movieInfo.cast_members, movieInfo.genre, movieInfo.release_date, movieInfo.grade, movieInfo.story];
+                    let queryRes = await dbQuery("INSERT", sql, params);
                 }
                 
             } catch (error) {

@@ -1,5 +1,6 @@
 const {Builder, By, Key, until, Capabilities} = require('selenium-webdriver');
 const { getJsonData, appendDataInJson } = require('./fileController');
+const {init:dbInit,dbQuery} = require("../models");
 
 (async function example() {
     // let driver = await new Builder().forBrowser('chrome').build();
@@ -10,6 +11,7 @@ const { getJsonData, appendDataInJson } = require('./fileController');
     var driver = new Builder().withCapabilities(Capabilities.chrome()).build();
 
     try {
+        await dbInit();
         let areaData = await getJsonData("area.json");
         let theaterData = await getJsonData("theater.json");
 
@@ -35,6 +37,14 @@ const { getJsonData, appendDataInJson } = require('./fileController');
                     addData[vKeys[0]] = vKeys[1];
                 });
                 addData.title = title;
+                let sql =  "INSERT INTO theater VALUES (?,?,?)";
+                let params = [];
+                for(let d of Object.keys(addData)) {
+                    if(d != 'date') params.push(addData[d]);
+                }
+                console.log(params);
+                let queryRes = await dbQuery("INSERT", sql, params);
+
                 appendDataInJson(["theater.json", addData, theaterData], (res)=> {});
             };
             let area_title = (await e.getText()).trim();
@@ -42,6 +52,9 @@ const { getJsonData, appendDataInJson } = require('./fileController');
             let addData = {};
             areacode = areacode.join("|");
             addData.area_id = areacode; addData.title = area_title;
+            let sql =  "INSERT INTO area VALUES (?,?)";
+            let params = [addData.area_id, addData.title];
+            let queryRes = await dbQuery("INSERT", sql, params);
             appendDataInJson(["area.json", addData, areaData], (res)=> {});
         }
         // console.log(areaArr);

@@ -1,7 +1,7 @@
 const {Builder, By, Key, until, Capabilities} = require('selenium-webdriver');
 const { getJsonData, appendDataInJson, appendLinkToTxt } = require('./fileController');
 const { downloadImageToUrl } = require('./imgDownload');
-
+const {init:dbInit,dbQuery} = require("../models");
 (async function init() {
     const chrome = require('selenium-webdriver/chrome');
     const chromedriver = require('chromedriver');
@@ -10,6 +10,7 @@ const { downloadImageToUrl } = require('./imgDownload');
     var driver = new Builder().withCapabilities(Capabilities.chrome()).build();
 
     try {
+        await dbInit();
         let movieData = await getJsonData("movie/movieGraph.json");
 
         // Navigate to Url
@@ -45,7 +46,7 @@ const { downloadImageToUrl } = require('./imgDownload');
                 let immersion = (await emotionView[3].getAttribute("aria-label")).trim().split(" ");
                 let moving = (await emotionView[4].getAttribute("aria-label")).trim().split(" ");
                 let mData = {
-                    "mid": mId,
+                    "movie_id": mId,
                     "site": "cgv",
                     "created": now,
                     "jqplot_sex": { "mal": (await jqpsexView[0].getText()).split(" ")[1], "fem":(await jqpsexView[1].getText()).split(" ")[1]},
@@ -71,16 +72,17 @@ const { downloadImageToUrl } = require('./imgDownload');
                         "moving":Number(moving[moving.length-1])
                     }
                 };
+                let sql =  "INSERT INTO movie_graph VALUES (?,?,?, ?,?,?,?)";
+                let params = [mData.movie_id, mData.site, mData.created, JSON.stringify(mData.jqplot_sex),
+                    JSON.stringify(mData.jqplot_age), JSON.stringify(mData.charm_point), JSON.stringify(mData.emotion_point)];
+                let queryRes = await dbQuery("INSERT", sql, params);
+               
                 appendDataInJson(["movie/movieGraph.json", mData, movieData], (res)=> {});
                 console.log(mData);
             } catch (error) {
               console.log(error);
             }
             
-            // #jqplot_sex > span
-            // #jqplot_age > div.jqplot-point-label
-            // #charm > div > div > svg > g:nth-child(13) > g > circle
-            // #emotion > div > div > svg > g:nth-child(13) > g > circle
         }
         
     } catch(err) {

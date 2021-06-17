@@ -1,6 +1,6 @@
 [
     {
-        "id": "primary key",
+        "movie_id": "primary key",
         "title": "크루엘라",
         "poster_img": "img link",
         "play_time": 134,

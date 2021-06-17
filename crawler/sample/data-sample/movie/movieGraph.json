@@ -1,6 +1,6 @@
 [
     {
-        "mid": "primary key",
+        "movie_id": "primary key",
         "site": "cgv",
         "created": "2021-06-15",
         "jqplot_sex": {
