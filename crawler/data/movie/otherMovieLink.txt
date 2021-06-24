@@ -1,56 +1,26 @@
-Error: http://www.cgv.co.kr/movies/detail-view/?midx=84595
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84601
-Error: http://www.cgv.co.kr/movies/detail-view/?midx=81343
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84699
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84723
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84222
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84733
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84301
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84341
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84658
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84726
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84682
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84737
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84687
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84657
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84566
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84662
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84659
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84661
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84660
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84683
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84697
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84713
-Error: http://www.cgv.co.kr/movies/detail-view/?midx=84672
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84752
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84738
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84493
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84739
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84614
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84756
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84487
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84732
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84664
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84747
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84488
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84751
-Error: http://www.cgv.co.kr/movies/detail-view/?midx=84688
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84760
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84761
-Error: http://www.cgv.co.kr/movies/detail-view/?midx=84624
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84404
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84399
-Error: http://www.cgv.co.kr/movies/detail-view/?midx=84667
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84302
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84328
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84555
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84248
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84313
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84305
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84405
-Error: http://www.cgv.co.kr/movies/detail-view/?midx=84669
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84638
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84734
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84730
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84729
-Can't search: http://www.cgv.co.kr/movies/detail-view/?midx=84731
+Can't search: 20205041
+Can't search: 20215108
+Can't search: 20215810
+Can't search: 20215832
+Can't search: 20215974
+Can't search: 20215982
+Can't search: 20216330
+Can't search: 20216333
+Can't search: 20205041
+Can't search: 20205041
+Can't search: 20215108
+Can't search: 20215810
+Can't search: 20215832
+Can't search: 20215974
+Can't search: 20215982
+Can't search: 20216330
+Can't search: 20216333
+Can't search: 20216335
+Can't search: 20216388
+Can't search: 20216428
+Can't search: 20216429
+Can't search: 20216430
+Can't search: 20216431
+Can't search: 20205041
+Can't search: 20215108
+Can't search: 20215810
