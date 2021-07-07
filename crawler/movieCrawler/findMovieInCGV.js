@@ -10,6 +10,8 @@ const {crawleMovieReview} = require("./crawleReviewInCGV");
 
     chrome.setDefaultService(new chrome.ServiceBuilder(chromedriver.path).build());
     var driver = new Builder().withCapabilities(Capabilities.chrome()).build();
+
+    // var driver = new Builder().withCapabilities(Capabilities.chrome()).setChromeOptions(new chrome.Options().headless()).build();
     // SELECT * FROM `movie` where release_date NOT LIKE '____-__-__' <<=  release_date를 알 수 없는 정보 (나중에 처리 필요)
     try {
         await dbInit();

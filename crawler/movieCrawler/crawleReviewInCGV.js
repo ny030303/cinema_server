@@ -31,9 +31,14 @@ exports.crawleMovieReview = async (driver, movie, mHref)  =>{
                             "like_num": Number((await rev.findElement(By.css(".btn_point_like #idLikeValue")).getText()).trim())
                         }
                         console.log(revJson);
-                        let sql =  "INSERT INTO movie_review VALUES (?,?,?, ?,?,?,?)";
-                        let params = [revJson.movie_id, revJson.site, revJson.created, revJson.writer, revJson.comment, revJson.like_num, -1];
-                        let queryRes = await dbQuery("INSERT", sql, params);
+                        try {
+                            let sql =  "INSERT INTO movie_review VALUES (?,?,?, ?,?,?,?)";
+                            let params = [revJson.movie_id, revJson.site, revJson.created, revJson.writer, revJson.comment, revJson.like_num, -1];
+                            let queryRes = await dbQuery("INSERT", sql, params);
+                        } catch (error) {
+                            console.log("이미 있거나 db 오류");
+                        }
+                        
                     }
                     if(attempts >= pageBtns.length) {
                         try {
@@ -46,6 +51,7 @@ exports.crawleMovieReview = async (driver, movie, mHref)  =>{
                         }
                     }
                 } catch (error) {
+                    console.log(error);
                     console.log("pageBtns 새로고침");
                     pageBtns = await driver.findElements(By.css("#paging_point li > a"));
                 }

@@ -19,6 +19,10 @@ exports.getJsonData = async (fileName) => {
         return null;
     }
 }
+
+exports.writeJsonData = async (fileName, json, callback) => {
+    fs.writeFileSync('./crawler/'+ fileName, json, callback); // write it back 
+}
 // export const appendDataInJson = async (params, callback) => {
 exports.appendDataInJson = (params, callback)  => {
     //fileName, addData, arrData, 
