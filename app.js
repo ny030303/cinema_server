@@ -20,9 +20,14 @@ var {init} = require('./models');
 init();
 
 let {crawleReservationRate} = require('./crawler/movieCrawler/crawleReservationRateRank');
-crawleReservationRate();
-let crawlerInterval = setInterval(()=> {
-  crawleReservationRate();
+let {crawleGraph} = require('./crawler/movieCrawler/crawleGraphInNaver');
+(async () => {
+  await crawleReservationRate();
+  await crawleGraph();
+})();
+let crawlerInterval = setInterval(async ()=> {
+  await crawleReservationRate();
+  await crawleGraph();
 }, 300000);
 
 // view engine setup

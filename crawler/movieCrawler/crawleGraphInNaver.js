@@ -1,0 +1,164 @@
+const {Builder, By, Key, until, Capabilities} = require('selenium-webdriver');
+const { getJsonData, appendDataInJson, appendLinkToTxt } = require('../fileController');
+const {init:dbInit,dbQuery} = require("../../models");
+
+exports.crawleGraph =  async function crawleGraph() {
+    const chrome = require('selenium-webdriver/chrome');
+    const chromedriver = require('chromedriver');
+
+    chrome.setDefaultService(new chrome.ServiceBuilder(chromedriver.path).build());
+    // var driver = new Builder().withCapabilities(Capabilities.chrome()).build();
+
+    var driver = new Builder().withCapabilities(Capabilities.chrome()).setChromeOptions(new chrome.Options().headless()).build();
+    // SELECT * FROM `movie` where release_date NOT LIKE '____-__-__' <<=  release_date를 알 수 없는 정보 (나중에 처리 필요)
+    try {
+        await dbInit();
+        let sql = "SELECT a.*,b.* FROM `movie` a, `movie_score` b where a.movie_id = b.movie_id AND DATE_FORMAT(now(), '%Y-%m-%d') = left(b.created, 10) order by b.reservation_rate desc"; 
+        let queryRes = await dbQuery("GET", sql, []);
+        for(let movie of queryRes.row) {
+            await driver.get("https://movie.naver.com/movie/search/result.nhn?section=movie&query="+ movie.title);
+            await driver.sleep(500);
+            // title, release_date, eng_title(선택)
+            try {
+                let noresultView, bottomView = null;
+                try {
+                    // noresult section 찾으면
+                    noresultView = await driver.findElement(By.css("#old_content > table > tbody > tr > td"));
+                    console.log("해당 조건에 데이터가 존재하지 않음");
+                    appendLinkToTxt(["movie/otherMovieLink.txt", "Can't search: "+ movie.movie_id +"\n"], (res)=> {});
+                } 
+                catch (err) {
+                    let nextBtn;
+                    try {nextBtn = await driver.findElement(By.css("#old_content > div.pagenavigation > table > tbody > tr > td.next"));} catch (error) {};
+                
+                    if(nextBtn) {
+                        // bottom navigation's while
+                        while(nextBtn) {
+                            try {
+                               // --find movie--
+                               let isBreakWhile = await findMovieInBoxList(driver, movie);
+
+                               if(isBreakWhile) {
+                                //    console.log("찾았으니 while 나가기");
+                                   break;
+                               }
+                                
+                               try {
+                                nextBtn = await driver.findElement(By.css("#old_content > div.pagenavigation > table > tbody > tr > td.next"));
+                                await nextBtn.click();
+                                await driver.sleep(500);
+                                } catch (error) {
+                                    // console.log("while 나가기");
+                                    break;
+                                }
+                            } catch (error) {
+                                // console.log("nextBtn 새로고침");
+                                nextBtn = await driver.findElement(By.css("#old_content > div.pagenavigation > table > tbody > tr > td.next"));
+                            }
+                        };
+                    } else {
+                        let isBreakWhile = await findMovieInBoxList(driver, movie);
+                    }
+                };
+            } catch (error) {
+                console.log(error);
+                console.log("해당 조건에 데이터가 존재하지 않음");
+            }
+            
+        }
+        
+    } catch(err) {
+        console.log(err);
+    }
+    finally{
+        await driver.quit();
+        await console.log("✨ graph finished ✨");
+    }
+};
+
+
+async function findMovieInBoxList(driver, movie) {
+    let res = false;
+    let movieBoxesView = await driver.findElements(By.css("#old_content > ul.search_list_1 li"));
+    for(let box of movieBoxesView) {
+        try {
+            let b_title = (await box.findElement(By.css("dl > dt > a")).getText()).trim().split(" (")[0];
+            // let b_release_date = (await box.findElement(By.css("dl > dd:nth-child(3) > a:nth-child(8)")).getText()).trim();
+            // console.log("b_title: ", b_title, " b_release_date: ", b_release_date);
+            if(movie.title == b_title) {
+                // console.log("movie 찾음");
+                res = true;
+                let mHref = (await box.findElement(By.css("p > a")).getAttribute("href"));
+                // console.log(mHref);
+                let mId = mHref.split("code=")[1];
+                // console.log(mId);
+                await crawleMovieGraph(driver, movie, "https://movie.naver.com/movie/bi/mi/point.nhn?code=" + mId);
+                // driver, movie, link
+                break;
+            }
+        } catch (error) {
+            console.log("movieBoxesView err");
+            console.log(error);
+        }
+        
+    }
+    return res;
+}
+
+async function crawleMovieGraph(driver, movie, url) {
+    try {
+        await driver.get(url);
+        // console.log(movie, url);
+        await driver.sleep(500);
+        // await (await driver.findElement(By.css("#actual_point_tab"))).click();
+        // await driver.sleep(1000);
+
+        try {
+            let graphJson = {
+                "movie_id": movie.movie_id,
+                "site": "naver",
+                "created": "now()",
+                "jqplot_sex": {
+                    "mal": Number((await driver.findElement(By.css("#actualGenderGraph > svg > text:nth-child(4) > tspan")).getText()).slice(0,-1)),
+                    "fem": Number((await driver.findElement(By.css("#actualGenderGraph > svg > text:nth-child(6) > tspan")).getText()).slice(0,-1))
+                },
+                "jqplot_age": {
+                    "10": Number((await driver.findElement(By.css(".mv_info > .viewing_graph > div > .bar_graph > div:nth-child(1) > strong.graph_percent")).getText()).slice(0,-1)),
+                    "20": Number((await driver.findElement(By.css(".mv_info > .viewing_graph > div > .bar_graph > div:nth-child(2) > strong.graph_percent")).getText()).slice(0,-1)),
+                    "30": Number((await driver.findElement(By.css(".mv_info > .viewing_graph > div > .bar_graph > div:nth-child(3) > strong.graph_percent")).getText()).slice(0,-1)),
+                    "40": Number((await driver.findElement(By.css(".mv_info > .viewing_graph > div > .bar_graph > div:nth-child(4) > strong.graph_percent")).getText()).slice(0,-1)),
+                    "50": Number((await driver.findElement(By.css(".mv_info > .viewing_graph > div > .bar_graph > div:nth-child(5) > strong.graph_percent")).getText()).slice(0,-1)),
+                },
+                "charm_point": {
+                    "derected":Number((await driver.findElement(By.css("#netizenEnjoyPointGraph > svg > text:nth-child(4) > tspan")).getText()).slice(0,-1)),
+                    "actor": Number((await driver.findElement(By.css("#netizenEnjoyPointGraph > svg > text:nth-child(6) > tspan")).getText()).slice(0,-1)),
+                    "story": Number((await driver.findElement(By.css("#netizenEnjoyPointGraph > svg > text:nth-child(8) > tspan")).getText()).slice(0,-1)),
+                    "visual_beauty": Number((await driver.findElement(By.css("#netizenEnjoyPointGraph > svg > text:nth-child(10) > tspan")).getText()).slice(0,-1)),
+                    "ost": Number((await driver.findElement(By.css("#netizenEnjoyPointGraph > svg > text:nth-child(12) > tspan")).getText()).slice(0,-1))
+                }
+            };
+            let d = new Date();
+            let fomatDate = new Date(d.getTime() - (d.getTimezoneOffset() * 60000)).toISOString();
+            let nowDate = fomatDate.replace("T", " ").slice(0,-5);
+
+            let sql =  "SELECT * FROM movie_score WHERE movie_id = ?";
+            res = await dbQuery("GET", "SELECT * FROM movie_graph WHERE movie_id = ? AND site = 'naver'", [graphJson.movie_id]);
+            // console.log(res.row);
+            if(res.row.length > 0) {
+                let sql =  "UPDATE movie_graph SET `created`=?,`jqplot_sex`=?,`jqplot_age`=?,`charm_point`=? WHERE movie_id = ? AND site = 'naver'";
+                let params = [nowDate, JSON.stringify(graphJson.jqplot_sex), JSON.stringify(graphJson.jqplot_age), JSON.stringify(graphJson.charm_point), graphJson.movie_id];
+                let queryRes = await dbQuery("UPDATE", sql, params);
+            } else {
+                let sql = "INSERT INTO movie_graph VALUES (?,?,?, ?,?,?)"; 
+                let queryRes = await dbQuery("INSERT", sql, [graphJson.movie_id, graphJson.site, nowDate, 
+                    JSON.stringify(graphJson.jqplot_sex), JSON.stringify(graphJson.jqplot_age), JSON.stringify(graphJson.charm_point)]);
+            }
+            // console.log(graphJson);
+
+        } catch (error) {
+            // console.log("no search");
+        }
+    } catch(err) {
+        console.log(err);
+    }
+}

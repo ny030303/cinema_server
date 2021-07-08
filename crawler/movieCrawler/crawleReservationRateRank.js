@@ -48,14 +48,9 @@ exports.crawleReservationRate = async function () {
         console.log(err);
     }
     finally{
-        console.log("✨ Reservation rate Reloaded ✨");
-        driver.quit(); 
+        await driver.quit(); 
+        await console.log("✨ Reservation rate Reloaded ✨");
     }
 }
 
-//SELECT a.*,b.reservation_rate FROM `movie` a, `movie_score` b where a.movie_id = b.movie_id order by b.reservation_rate desc
 
-// SELECT a.*,b.reservation_rate FROM `movie` a,
-// `movie_score` b 
-// where a.movie_id = b.movie_id
-// order by b.reservation_rate desc

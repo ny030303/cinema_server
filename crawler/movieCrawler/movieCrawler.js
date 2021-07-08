@@ -8,7 +8,8 @@ const {init:dbInit,dbQuery} = require("../../models");
     const chromedriver = require('chromedriver');
 
     chrome.setDefaultService(new chrome.ServiceBuilder(chromedriver.path).build());
-    var driver = new Builder().withCapabilities(Capabilities.chrome()).setChromeOptions(new chrome.Options().headless()).build();
+    // var driver = new Builder().withCapabilities(Capabilities.chrome()).setChromeOptions(new chrome.Options().headless()).build();
+    var driver = new Builder().withCapabilities(Capabilities.chrome()).build();
 
     try {
         await dbInit();
@@ -22,16 +23,27 @@ const {init:dbInit,dbQuery} = require("../../models");
 
         let pageBtns = await driver.findElements(By.css("#pagingForm > div > ul > li a"));
         let attempts = 0;
-
+        let savePoint = false;
         while(attempts < pageBtns.length) {
             try {
-                let nowPage = Number(await pageBtns[attempts].getText());
-                console.log(nowPage, pages.movieCrawler);
-                await pageBtns[attempts].click();
-                attempts += 1;
-                await driver.sleep(500);
+                // if(!savePoint) { // page.json와 같은 btn 번호 찾기
+                //     for(let btnNum = 0; btnNum < pageBtns.length; btnNum++) {
+                //         let num  = Number(await pageBtns[btnNum].getText());
+                //         console.log(num, pages.movieCrawler);
+                //         if(num != pages.movieCrawler) {
+                //             attempts += 1;
+                //         } else {
+                //             savePoint = true;
+                //             break;
+                //         }
+                //     }
+                // } else {
+                    let nowPage = Number(await pageBtns[attempts].getText());
+                    console.log(nowPage, pages.movieCrawler);
+                    await pageBtns[attempts].click();
+                    attempts += 1;
+                    await driver.sleep(600);
 
-                if(pages.movieCrawler == nowPage) {
                     let mListView = await driver.findElements(By.css("#content > div.rst_sch > table > tbody > tr"));
                     //List foreach
                     for(let rev of mListView) {
@@ -54,14 +66,12 @@ const {init:dbInit,dbQuery} = require("../../models");
                                 "actor": {},
                                 "story": ""
                             };
-                            
                             // console.log(revJson);
-
                             await title.click();
                             await driver.sleep(500);
 
                             let href = await (await driver.findElement(By.css(".item_tab.basic > div.ovf.info.info1 > a"))).getAttribute("href");
-                            console.log(href);
+                            // console.log(href);
                             let urlArr = href.split("/"); 
                             let imgLink = `${Date.now()}_${urlArr[urlArr.length-1]}`;
                             if(urlArr[urlArr.length-1] == "searchMovieList.do#") {
@@ -69,8 +79,6 @@ const {init:dbInit,dbQuery} = require("../../models");
                             } else {
                                 revJson.poster_img = imgLink;
                             }
-                            
-
                             
                             revJson.memo = (await driver.findElement(By.css(".item_tab.basic > div.ovf.info.info1 > dl > dd:nth-child(8)")).getText()).trim();
                             revJson.updated_date = (await driver.findElement(By.css(".item_tab.basic > div.bar_top > div")).getText()).trim().split("최종수정: ")[1].split(" 수정요청")[0];
@@ -80,7 +88,6 @@ const {init:dbInit,dbQuery} = require("../../models");
                             } catch (error) {
                                 revJson.story = "";
                             }
-                            
                             // console.log(revJson);
 
                             await driver.findElement(By.css("div.hd_layer > a:nth-child(3)")).click();
@@ -105,17 +112,18 @@ const {init:dbInit,dbQuery} = require("../../models");
                             }
 
                             
-                            pages.movieCrawler = pages.movieCrawler + 1;
-                            writeJsonData("pages.json", pages, ()=> {
+                            // pages.movieCrawler = pages.movieCrawler + 1;
+                            // writeJsonData("pages.json", pages, ()=> {
                                 
-                            })
+                            // })
                         } catch (error) {
                             console.log(error);
                         }
                         // appendDataInJson(["movie/movie.json", movieInfo, movieData], (res)=> {});
                     }
-                } else {
-                }
+                // }
+                
+                
                 if(attempts >= pageBtns.length) {
                     try {
                         let nextBtn = await driver.findElement(By.css("#pagingForm > div > a.btn.next"));
@@ -125,19 +133,21 @@ const {init:dbInit,dbQuery} = require("../../models");
                         attempts = 0;
                         console.log(attempts);
                     } catch (error) {
+                        console.log(error);
                         console.log("while 나가기");
                         break;
                     }
                 }
             } catch (err){
                 console.log("pageBtns 새로고침");
+                // console.log(err);
                 pageBtns = await driver.findElements(By.css("#pagingForm > div > ul > li a"));
                 mListView = await driver.findElements(By.css("#content > div.rst_sch > table > tbody > tr"));
             }
         }
     }
     finally{
-        console.log("✨ Reservation rate Reloaded ✨");
+        console.log("✨ finished ✨");
         driver.quit(); 
     }
 })();
