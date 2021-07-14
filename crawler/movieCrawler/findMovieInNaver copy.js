@@ -15,7 +15,8 @@ const {crawleMovieReview} = require("./crawleReviewInNaver");
     // SELECT * FROM `movie` where release_date NOT LIKE '____-__-__' <<=  release_date를 알 수 없는 정보 (나중에 처리 필요)
     try {
         await dbInit();
-        let sql = "SELECT a.movie_id FROM `movie` a, `movie_score` b where a.movie_id = b.movie_id AND DATE_FORMAT(now(), '%Y-%m-%d') = left(b.created, 10) order by b.reservation_rate desc"; 
+        let sql = "SELECT * FROM movie where production_status = '개봉' AND movie_id NOT IN " +
+         "(SELECT a.movie_id FROM `movie` a, `movie_score` b where a.movie_id = b.movie_id AND DATE_FORMAT(now(), '%Y-%m-%d') = left(b.created, 10) order by b.reservation_rate desc)"; 
         let queryRes = await dbQuery("GET", sql, []);
         for(let movie of queryRes.row) {
             await driver.get("https://movie.naver.com/movie/search/result.nhn?section=movie&query="+ movie.title);

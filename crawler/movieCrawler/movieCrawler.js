@@ -94,18 +94,44 @@ const {init:dbInit,dbQuery} = require("../../models");
                             await driver.sleep(500);
 
                             try {
-                                let sql = "INSERT INTO movie VALUES (?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?)";
-                                let params = [revJson.movie_id, revJson.title, revJson.eng_title, revJson.production_year, revJson.production_country,
-                                    revJson.size_type, revJson.genore, revJson.production_status,revJson.poster_img, revJson.release_date,
-                                    revJson.updated_date,revJson.memo,revJson.director,JSON.stringify(revJson.actor),revJson.story];
-                                let queryRes = await dbQuery("INSERT", sql, params);
-                                // console.log(queryRes);
-                                if(!queryRes.error) {
-                                    if(urlArr[urlArr.length-1] != "searchMovieList.do#") {
-                                        downloadImageToUrl(href, imgLink);
+                                // 원래 있는 데이터 업데이트
+                                res = await dbQuery("GET", "SELECT * FROM movie WHERE movie_id = ?", [revJson.movie_id]);
+                                if(res.row.length > 0) {
+                                    console.log(res.row[0].updated_date, revJson.updated_date);
+                                    if(res.row[0].updated_date != revJson.updated_date) {
+                                        let sql =  "UPDATE `movie` SET `title`=?,`eng_title`=?,`production_year`=?,`production_country`=?,`size_type`=?,`genore`=?,`production_status`=?,`poster_img`=?,`release_date`=?,`updated_date`=?,`memo`=?,`director`=?,`actor`=?,`story`=? WHERE `movie_id`=?";
+                                        let imgUrl;
+                                        if(res.row[0].poster_img == "") imgUrl = revJson.poster_img;
+                                        else imgUrl = res.row[0].poster_img;
+                                        let params = [revJson.title, revJson.eng_title, revJson.production_year, revJson.production_country, revJson.size_type, revJson.genore,
+                                            revJson.production_status, imgUrl, revJson.release_date, revJson.updated_date, revJson.memo,
+                                            revJson.director, JSON.stringify(revJson.actor), revJson.story, revJson.movie_id];
+                                        let queryRes = await dbQuery("UPDATE", sql, params);
+                                        if(!queryRes.error) {
+                                            if(urlArr[urlArr.length-1] != "searchMovieList.do#" && imgUrl == revJson.poster_img) {
+                                                downloadImageToUrl(href, imgLink);
+                                            }
+                                        }
+                                        console.log(" updated => " + revJson.movie_id);
+                                    } else {
+                                        console.log("no updated");
+                                        
                                     }
-                                    
+                                } else {
+                                    let sql = "INSERT INTO movie VALUES (?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?)";
+                                    let params = [revJson.movie_id, revJson.title, revJson.eng_title, revJson.production_year, revJson.production_country,
+                                        revJson.size_type, revJson.genore, revJson.production_status,revJson.poster_img, revJson.release_date,
+                                        revJson.updated_date,revJson.memo,revJson.director,JSON.stringify(revJson.actor),revJson.story];
+                                    let queryRes = await dbQuery("INSERT", sql, params);
+                                    console.log(" inserted => " + revJson.movie_id);
+                                    // console.log(queryRes);
+                                    if(!queryRes.error) {
+                                        if(urlArr[urlArr.length-1] != "searchMovieList.do#") {
+                                            downloadImageToUrl(href, imgLink);
+                                        }
+                                    }
                                 }
+                                
                                 // 
                             } catch (error) {
                                 console.log("db 오류");

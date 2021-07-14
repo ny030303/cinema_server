@@ -1,0 +1,20 @@
+=== GET 형식 req 필요o ===
+- 192.168.31.31:54000/movies/review?movie_id=[movie_id]
+   ex.) 192.168.31.31:54000/movies/review?movie_id=20191951
+   ::: movie_id 의 review GET (like 순)
+
+- 192.168.31.31:54000/movies/genore?genore=[genore]
+    ex.) 192.168.31.31:54000/movies/genore?genore=코미디
+    ::: get 영화 정보 (장르 검색)
+
+- 192.168.31.31:54000/images/[image URL]
+    ex.) 192.168.31.31:54000/images/1624430805798_f5b9324a8a5b4c01977419a6e6442ab9.jpg
+    ::: get 영화 poster
+
+
+=== GET 형식 req 필요x ===
+- 192.168.31.31:54000/movies/rank
+    ::: get movie (상영중인 영화 정보 + 예매율 + graph)  -> score 갱신되는 것을 기준으로 구별
+    
+- 192.168.31.31:54000/movies/rating
+    ::: get movie {상영중인 영화 정보 + review (rating_num 평균 높은 순) + graph 정보}

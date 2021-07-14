@@ -141,7 +141,7 @@ async function crawleMovieGraph(driver, movie, url) {
             let fomatDate = new Date(d.getTime() - (d.getTimezoneOffset() * 60000)).toISOString();
             let nowDate = fomatDate.replace("T", " ").slice(0,-5);
 
-            let sql =  "SELECT * FROM movie_score WHERE movie_id = ?";
+            
             res = await dbQuery("GET", "SELECT * FROM movie_graph WHERE movie_id = ? AND site = 'naver'", [graphJson.movie_id]);
             // console.log(res.row);
             if(res.row.length > 0) {
