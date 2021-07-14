@@ -2,7 +2,7 @@ const {Builder, By, Key, until, Capabilities} = require('selenium-webdriver');
 const { getJsonData, appendDataInJson, appendLinkToTxt } = require('../fileController');
 const { downloadImageToUrl } = require('../imgDownload');
 const {init:dbInit,dbQuery} = require("../../models");
-const {crawleMovieReview} = require("./crawleReviewInNaver");
+const {crawleMovieReview} = require("./crawleReviewInNaver_noShow");
 
 (async function init() {
     const chrome = require('selenium-webdriver/chrome');
