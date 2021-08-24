@@ -1,22 +1,25 @@
 const {Builder, By, Key, until, Capabilities} = require('selenium-webdriver');
 const { getJsonData, appendDataInJson, appendLinkToTxt } = require('../fileController');
 const {init:dbInit,dbQuery} = require("../../models");
-
-exports.crawleGraph =  async function crawleGraph() {
+//exports.crawleGraph =  
+async function crawleGraph() {
     const chrome = require('selenium-webdriver/chrome');
     const chromedriver = require('chromedriver');
 
     chrome.setDefaultService(new chrome.ServiceBuilder(chromedriver.path).build());
-    // var driver = new Builder().withCapabilities(Capabilities.chrome()).build();
+    var driver = new Builder().withCapabilities(Capabilities.chrome()).build();
 
-    var driver = new Builder().withCapabilities(Capabilities.chrome()).setChromeOptions(new chrome.Options().headless()).build();
+    // var driver = new Builder().withCapabilities(Capabilities.chrome()).setChromeOptions(new chrome.Options().headless()).build();
     // SELECT * FROM `movie` where release_date NOT LIKE '____-__-__' <<=  release_date를 알 수 없는 정보 (나중에 처리 필요)
     try {
         await dbInit();
         let sql = "SELECT a.*,b.* FROM `movie` a, `movie_score` b where a.movie_id = b.movie_id AND DATE_FORMAT(now(), '%Y-%m-%d') = left(b.created, 10) order by b.reservation_rate desc"; 
         let queryRes = await dbQuery("GET", sql, []);
         for(let movie of queryRes.row) {
-            await driver.get("https://movie.naver.com/movie/search/result.nhn?section=movie&query="+ movie.title);
+            console.log(movie.title);
+            console.log(encodeURI("https://movie.naver.com/movie/search/result.nhn?section=movie&query="+ movie.title));
+            // window에서 url 한글 깨지는 오류 고쳐야함
+            await driver.get(encodeURI("https://movie.naver.com/movie/search/result.nhn?section=movie&query="+ movie.title));
             await driver.sleep(500);
             // title, release_date, eng_title(선택)
             try {
@@ -162,3 +165,7 @@ async function crawleMovieGraph(driver, movie, url) {
         console.log(err);
     }
 }
+
+(()=> {
+    crawleGraph();
+})()

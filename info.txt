@@ -18,3 +18,15 @@
     
 - 192.168.31.31:54000/movies/rating
     ::: get movie {상영중인 영화 정보 + review (rating_num 평균 높은 순) + graph 정보}
+
+
+
+==========================
+
+1. npm i -g yarn
+2. yarn install
+3. ./public/images/uploads 폴더를 생성
+3-1. 해당 폴더에 영화포스터 zip 파일 이곳에 풀기 or
+    database 내 movie 테이블 비우고 4번 실행 (처음부터 새로 받기)
+4. 영화 정보 업데이트
+(node .\crawler\movieCrawler\movieCrawler.js)
