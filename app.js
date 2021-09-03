@@ -6,13 +6,18 @@ var cookieParser = require('cookie-parser');
 var morgan = require('morgan');
 
 const dotenv = require('dotenv');
+const passport = require('passport');
+
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const session = require('express-session');
+const flash = require('connect-flash');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var moviesRouter = require('./routes/movies');
+var authRouter = require('./routes/auth');
+
 dotenv.config(); // env
 var app = express();
 
@@ -35,6 +40,10 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 app.use(morgan('dev'));
+
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
 
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
@@ -62,6 +71,7 @@ app.use(cors({
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/movies', moviesRouter);
+app.use('/auth', authRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -77,6 +87,15 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
+});
+
+passport.serializeUser((user, done) => done(null, user));
+passport.deserializeUser( (user, done) => {
+  done(null, user);
+  // db.users.find({'id': user.id}).then(function(exUser) {
+  //   console.log(exUser);
+  //   // done(err, exUser[0]);
+  // });
 });
 
 module.exports = app;

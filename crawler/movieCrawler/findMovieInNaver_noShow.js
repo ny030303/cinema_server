@@ -19,7 +19,7 @@ const {crawleMovieReview} = require("./crawleReviewInNaver_noShow");
          "(SELECT a.movie_id FROM `movie` a, `movie_score` b where a.movie_id = b.movie_id AND DATE_FORMAT(now(), '%Y-%m-%d') = left(b.created, 10) order by b.reservation_rate desc)"; 
         let queryRes = await dbQuery("GET", sql, []);
         for(let movie of queryRes.row) {
-            await driver.get("https://movie.naver.com/movie/search/result.nhn?section=movie&query="+ movie.title);
+            await driver.get('https://movie.naver.com/movie/search/result.naver?section=movie&query='+ encodeURI(movie.title));
             await driver.sleep(500);
             // title, release_date, eng_title(선택)
             try {

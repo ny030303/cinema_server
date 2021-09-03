@@ -2,6 +2,14 @@ var express = require('express');
 var router = express.Router();
 const fs = require('fs');
 /* GET home page. */
+router.get('/', function (req, res, next) {
+  // console.log(req.user);
+  if(req.user) { // 유저 로그인 중
+    res.status(201).json({result: req.user});
+  } else {
+    res.status(201).json({result: 0});
+  }
+});
 // router.get('/', function(req, res, next) {
 //   res.render('index', { title: 'Express' });
 // });
