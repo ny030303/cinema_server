@@ -82,7 +82,19 @@ const {init:dbInit,dbQuery} = require("../../models");
                             
                             revJson.memo = (await driver.findElement(By.css(".item_tab.basic > div.ovf.info.info1 > dl > dd:nth-child(8)")).getText()).trim();
                             revJson.updated_date = (await driver.findElement(By.css(".item_tab.basic > div.bar_top > div")).getText()).trim().split("최종수정: ")[1].split(" 수정요청")[0];
-                            revJson.release_date = (await driver.findElement(By.css(".item_tab.basic dl > dd:nth-child(10)")).getText()).trim();
+                            let dts = await driver.findElements(By.css(".item_tab.basic dl > *"));
+                            let dtNum = 0;
+                            for(let dt of dts) {
+                                dtName = (await dt.getText()).trim();
+                                if(dtName == "개봉일") {
+                                    console.log("ㄱㅐ봉일"+ (await dts[dtNum+1].getText()));
+                                    revJson.release_date = (await dts[dtNum+1].getText());
+                                    break;
+                                }
+                                dtNum++;
+                            };
+                            
+                            
                             try {
                                 revJson.story = (await driver.findElement(By.css(".item_tab.basic  p.desc_info")).getText()).trim();
                             } catch (error) {

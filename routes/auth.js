@@ -23,6 +23,7 @@ const authOpts = {
 };
 
 passport.use('local', new LocalStrategy(authOpts.local, async (req, id, pwd, done) => {
+  console.log(req);
   try {
     console.log(req);
     let dbUser = await dbQuery("GET", "SELECT * FROM user WHERE id = ?", [id]);
@@ -47,7 +48,13 @@ passport.use('local', new LocalStrategy(authOpts.local, async (req, id, pwd, don
   }
 }));
 
+// router.post('/local', function(req,res, next) {
+//   res.send(`<h1>Custom Property Value: ${req.body.id}</h1>`);
+
+// });
+
 router.post('/local', passport.authenticate('local', authOpts.redirect));
+
 
 router.get('/failed', function (req, res, next) {
   let text = req.flash();

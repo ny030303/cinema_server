@@ -3,7 +3,7 @@ var router = express.Router();
 const fs = require('fs');
 /* GET home page. */
 router.get('/', function (req, res, next) {
-  // console.log(req.user);
+  console.log(req.user);
   if(req.user) { // 유저 로그인 중
     res.status(201).json({result: req.user});
   } else {
@@ -31,7 +31,7 @@ router.get('/images/:fileName', function (req, res, next) {
   let contentType = mimeTypes[extname];
   fs.readFile('public/images/uploads/' + req.params.fileName, function (err, result) {
     if (err) {
-      res.next(err);
+      res.status(201).json({result: err});
     } else {
       res.writeHead(200, { 'Content-Type': contentType });
       res.end(result, 'utf-8');

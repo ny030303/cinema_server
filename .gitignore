@@ -1,5 +1,6 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 /public/images/uploads
+/public/images/users
 # dependencies
 /node_modules
 /.pnp
