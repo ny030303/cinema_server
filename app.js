@@ -21,18 +21,38 @@ var authRouter = require('./routes/auth');
 dotenv.config(); // env
 var app = express();
 
-var {init} = require('./models');
+var {init} = require('./controllers/dbController');
 init();
+
+Array.prototype.division = function (n) {
+  let arr = this;
+  let len = arr.length;
+  let cnt = Math.floor(len / n) + (Math.floor(len % n) > 0 ? 1 : 0);
+  let ret = [];
+  for (let i = 0; i < cnt; i++) {
+    ret.push(arr.splice(0, n));
+  }
+  return ret;
+}
+
+const prevConsoleLog = console.log;
+console.log = (...params) => {
+  // prevConsoleLog(callerSrc = (new Error()).stack.split("\n"));
+  let callerSrc = (new Error()).stack.split("\n")[2];
+  prevConsoleLog('(' + callerSrc.substr(callerSrc.lastIndexOf('\\') + 1), params);
+};
 
 let {crawleReservationRate} = require('./crawler/movieCrawler/crawleReservationRateRank');
 let {crawleGraph} = require('./crawler/movieCrawler/crawleGraphInNaver');
 (async () => {
   await crawleReservationRate();
-  await crawleGraph();
+  // await crawleGraph();
+  await require('./crawler/movieCrawler/crawleGraphInNaver').crawleGraph2();
 })();
-let crawlerInterval = setInterval(async ()=> {
+let crawlerInterval = setInterval(async () => {
   await crawleReservationRate();
-  await crawleGraph();
+  await require('./crawler/movieCrawler/crawleGraphInNaver').crawleGraph2();
+  // await crawleGraph();
 }, 300000);
 
 // view engine setup

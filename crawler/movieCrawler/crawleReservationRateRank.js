@@ -1,6 +1,6 @@
 const {Builder, By, Key, until, Capabilities} = require('selenium-webdriver');
 const { downloadImageToUrl } = require('../imgDownload');
-const {init:dbInit,dbQuery} = require("../../models");
+const {init:dbInit,dbQuery} = require("../../controllers/dbController");
 // ()();
 
 exports.crawleReservationRate = async function () {

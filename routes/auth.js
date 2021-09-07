@@ -1,7 +1,7 @@
 const express = require('express');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-const {dbQuery} = require('../models');
+const {init: dbInit, dbQuery, getTodayMovies} = require("../controllers/dbController");
 // const bcrypt = require('bcrypt');
 // const NaverStrategy = require('passport-naver').Strategy;
 // const KakaoStrategy = require('passport-kakao').Strategy;

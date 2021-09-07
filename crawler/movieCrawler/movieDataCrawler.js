@@ -1,7 +1,7 @@
 const {Builder, By, Key, until, Capabilities} = require('selenium-webdriver');
 const { getJsonData, appendDataInJson, appendLinkToTxt } = require('./fileController');
 const { downloadImageToUrl } = require('./imgDownload');
-const {init:dbInit,dbQuery} = require("../models");
+const {dbQuery} = require("../../../controllers/dbController");
 (async function init() {
     const chrome = require('selenium-webdriver/chrome');
     const chromedriver = require('chromedriver');

@@ -1,7 +1,7 @@
 const {Builder, By, Key, until, Capabilities} = require('selenium-webdriver');
 const { getJsonData, appendDataInJson, appendLinkToTxt } = require('../fileController');
 const { downloadImageToUrl } = require('../imgDownload');
-const {dbQuery} = require("../../models");
+const {dbQuery} = require("../../controllers/dbController");
 exports.crawleMovieReview = async (driver, movie, mHref)  =>{
     try {
         await driver.get(mHref);

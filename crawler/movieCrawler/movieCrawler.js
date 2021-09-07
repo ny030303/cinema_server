@@ -1,7 +1,7 @@
 const {Builder, By, Key, until, Capabilities} = require('selenium-webdriver');
 const { downloadImageToUrl } = require('../imgDownload');
 const { getJsonData, appendDataInJson, appendLinkToTxt,writeJsonData} = require('../fileController');
-const {init:dbInit,dbQuery} = require("../../models");
+const {init: dbInit, dbQuery} = require("../../controllers/dbController");
 (async function example() {
     // let driver = await new Builder().forBrowser('chrome').build();
     const chrome = require('selenium-webdriver/chrome');

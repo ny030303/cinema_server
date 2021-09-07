@@ -1,5 +1,5 @@
 var express = require('express');
-var {dbQuery} = require('../models');
+const {init: dbInit, dbQuery, getTodayMovies} = require("../controllers/dbController");
 var router = express.Router();
 const fs = require('fs');
 // const bcrypt = require('bcrypt');
@@ -58,5 +58,7 @@ router.post('/signup', upload.single('img'), async (req, res, next) => {
 
   res.json({state: queryRes.state});
 });
+
+// SELECT * FROM movie_review WHERE LENGTH(comment) < 1
 
 module.exports = router;

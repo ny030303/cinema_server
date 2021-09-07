@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-const {dbQuery} = require('../models');
+const {init: dbInit, dbQuery, getTodayMovies} = require("../controllers/dbController");
 // let dbUser = await dbQuery("GET", "SELECT * FROM user WHERE email = ?", [email]);
 // dbUser = dbUser.row[0];
 
