@@ -47,11 +47,11 @@ let {crawleGraph} = require('./crawler/movieCrawler/crawleGraphInNaver');
 (async () => {
   await crawleReservationRate();
   // await crawleGraph();
-  await require('./crawler/movieCrawler/crawleGraphInNaver').crawleGraph2();
+  // await require('./crawler/movieCrawler/crawleGraphInNaver').crawleGraph2();
 })();
 let crawlerInterval = setInterval(async () => {
   await crawleReservationRate();
-  await require('./crawler/movieCrawler/crawleGraphInNaver').crawleGraph2();
+  // await require('./crawler/movieCrawler/crawleGraphInNaver').crawleGraph2();
   // await crawleGraph();
 }, 300000);
 
@@ -60,6 +60,15 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 app.use(morgan('dev'));
+app.use(session({
+  resave: false,
+  saveUninitialized: false,
+  secret: process.env.COOKIE_SECRET,
+  cookie: {
+    httpOnly: true,
+    secure: false,
+  },
+}));
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -73,15 +82,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(session({
-  resave: false,
-  saveUninitialized: false,
-  secret: process.env.COOKIE_SECRET,
-  cookie: {
-    httpOnly: true,
-    secure: false,
-  },
-}));
 
 app.use(cors({
   origin: true,
@@ -112,10 +112,6 @@ app.use(function(err, req, res, next) {
 passport.serializeUser((user, done) => done(null, user));
 passport.deserializeUser( (user, done) => {
   done(null, user);
-  // db.users.find({'id': user.id}).then(function(exUser) {
-  //   console.log(exUser);
-  //   // done(err, exUser[0]);
-  // });
 });
 
 module.exports = app;

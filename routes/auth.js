@@ -23,17 +23,17 @@ const authOpts = {
 };
 
 passport.use('local', new LocalStrategy(authOpts.local, async (req, id, pwd, done) => {
-  console.log(req);
+  // console.log(req);
   try {
-    console.log(req);
+    console.log(req.body);
     let dbUser = await dbQuery("GET", "SELECT * FROM user WHERE id = ?", [id]);
-    dbUser = dbUser.row[0];
-    console.log(dbUser);
-    if (dbUser) {
-      let result = pwd == dbUser.pwd; // pwd check
+    let user = dbUser.row[0];
+    console.log(user);
+    if (user) {
+      let result = pwd == user.pwd; // pwd check
       console.log(result);
       if (result) {
-        done(null, dbUser);
+        done(null, user);
       }
       else {
         done(null, false, {message: '비밀번호가 일치하지 않습니다.'});
