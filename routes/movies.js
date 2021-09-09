@@ -20,7 +20,7 @@ router.get('/', async (req, res, next) => {
 // get movie (영화 장르)
 // SELECT * FROM `movie_review` WHERE movie_id = "20194501"
 router.get('/genore', async (req, res, next) => {
-    let params = req.query.genore; // req.body.genore
+    let params = req.body.genore; // req.body.genore
     let sql = "SELECT * FROM `movie` WHERE production_status = '개봉' AND genore LIKE '%"+params+"%'"; 
     try {
         let queryRes = await dbQuery("GET", sql, []);
@@ -100,12 +100,26 @@ router.get('/rating', async (req, res, next) => {
 // get review (like 순)
 router.get('/review', async (req, res, next) => {
     let sql = "SELECT * FROM `movie_review` WHERE movie_id = ? ORDER BY like_num DESC"; 
-    let params = [req.query.movie_id];
+    let params = [req.body.movie_id];
     // let params = [req.body.movie_id];
     try {
         let queryRes = await dbQuery("GET", sql, params);
         // console.log(queryRes);
         res.json({reviews: queryRes.row});
+    } catch (err) {
+        console.log(err);
+        res.json({error: err});
+    }
+    // res.json({state: queryRes.state});
+});
+
+router.get('/search', async (req, res, next) => {
+    let params = req.body.text; // req.body.text
+    let sql = "SELECT * FROM `movie` WHERE title LIKE '"+params+"%'";
+    try {
+        let queryRes = await dbQuery("GET", sql, params);
+        // console.log(queryRes);
+        res.json({movies: queryRes.row});
     } catch (err) {
         console.log(err);
         res.json({error: err});
