@@ -5,6 +5,7 @@ const iconv = require("iconv-lite");
 
 const chrome = require('selenium-webdriver/chrome');
 const chromedriver = require('chromedriver');
+const { getNowDateToYYMMDD } = require('../../CommenUtil');
 
 const implicit_wait = {implicit: 5000, pageLoad: 5000};
 
@@ -211,9 +212,7 @@ async function crawleMovieGraph(driver, movie, url) {
           "ost": Number((await driver.findElement(By.css("#netizenEnjoyPointGraph > svg > text:nth-child(12) > tspan")).getText()).slice(0, -1))
         }
       };
-      let d = new Date();
-      let fomatDate = new Date(d.getTime() - (d.getTimezoneOffset() * 60000)).toISOString();
-      let nowDate = fomatDate.replace("T", " ").slice(0, -5);
+      let nowDate = getNowDateToYYMMDD();
 
 
       res = await dbQuery("GET", "SELECT * FROM movie_graph WHERE movie_id = ? AND site = 'naver'", [graphJson.movie_id]);

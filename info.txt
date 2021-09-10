@@ -1,32 +1,34 @@
-=== GET 형식 req 필요o ===
-- 192.168.31.31:54000/movies/review?movie_id=[movie_id]
-   ex.) 192.168.31.31:54000/movies/review?movie_id=20191951
-   ::: movie_id 의 review GET (like 순)
+host => 192.168.31.31:54000 일때 기준
 
-- 192.168.31.31:54000/movies/genore?genore=[genore]
-    ex.) 192.168.31.31:54000/movies/genore?genore=코미디
-    ::: get 영화 정보 (장르 검색)
+=== GET 형식 req 필요o ===
+- 192.168.31.31:54000/movies/genore?genore=[ 코미디 ]
+    ::: get 영화 장르 검색 가져오기 ('%genore%' 로 가져옴) 
 
 - 192.168.31.31:54000/images/[image URL]
     ex.) 192.168.31.31:54000/images/1624430805798_f5b9324a8a5b4c01977419a6e6442ab9.jpg
-    ::: get 영화 poster
+    ::: get 영화 poster img
 
-- 192.168.31.185:54000/movies/review?movie_id=[movie_id]
-    ex.) 192.168.31.185:54000/movies/review?movie_id=20191951
-    ::: get 영화 리뷰 가져오기
+- 192.168.31.185:54000/movies/review?movie_id=[ 20191951 ]
+    ::: get 영화 리뷰 가져오기 (like 순)
 
-- http://617c-121-165-105-153.ngrok.io/movies/search?text=[ 검색이름 ]
-    ex.) http://617c-121-165-105-153.ngrok.io/movies/search?text=블러드
-    ::: get 영화 검색결과 가져오기 ( 'text%' 로 가져옴)
+- 192.168.31.185:54000/movies/search?text=[ 검색이름 ]
+    ::: get 영화 검색결과 가져오기 ('text%' 로 가져옴)
 
 === GET 형식 req 필요x ===
+- 192.168.31.31:54000/
+    ::: 로그인 되어있는지 확인 
+    ( 
+        로그인 ON -> return session user 정보
+        로그인 OFF -> return  {"result": 0}
+    )
+
 - 192.168.31.31:54000/movies/rank
     ::: get movie (상영중인 영화 정보 + 예매율 + graph)  -> score 갱신되는 것을 기준으로 구별
     
 - 192.168.31.31:54000/movies/rating
     ::: get movie {상영중인 영화 정보 + review (rating_num 평균 높은 순) + graph 정보}
 
-- http://617c-121-165-105-153.ngrok.io/auth/logout
+- 192.168.31.31:54000/auth/logout
     ::: (GET) logout 요청 처리
 
 
@@ -38,6 +40,18 @@
 
 - 192.168.31.185:54000/users/signup
     ::: 회원가입 부분 form-data 형식으로  id, name, pwd, img(file) 필요 (이름을 지킬 것)
+
+- 192.168.31.185:54000/movies/review/write
+    ::: 리뷰 작성 하기 form-data 형식으로  
+        movie_id, writer(user Table의 id), comment, rating_num(평점) 필요 (이름을 지킬 것)
+
+- 192.168.31.185:54000/movies/review/edit
+    ::: 리뷰 수정 하기 form-data 형식으로  
+        idx, movie_id, writer(user Table의 id), comment, rating_num(평점) 필요 (이름을 지킬 것)
+
+- 192.168.31.185:54000/movies/review/delete
+    ::: 리뷰 삭제 하기 form-data 형식으로  
+        idx, movie_id, writer(user Table의 id) 필요 (이름을 지킬 것)
 
 ==========================
 

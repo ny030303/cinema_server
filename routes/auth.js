@@ -4,8 +4,9 @@ const LocalStrategy = require('passport-local').Strategy;
 const {init: dbInit, dbQuery, getTodayMovies} = require("../controllers/dbController");
 // const bcrypt = require('bcrypt');
 // const NaverStrategy = require('passport-naver').Strategy;
-// const KakaoStrategy = require('passport-kakao').Strategy;
+const KakaoStrategy = require('passport-kakao').Strategy;
 // const GoogleStrategy = require('passport-google-oauth20').Strategy;
+
 
 const router = express.Router();
 
@@ -15,12 +16,22 @@ const authOpts = {
     passwordField: 'pwd',
     passReqToCallback: true
   },
+  kakao: {
+    clientID: '0dd390801a8b8179ce19935428daf3ae',
+    callbackURL: '/auth/kakao_oauth'
+  },
   redirect: {
     successRedirect: '/',
     failureRedirect: '/auth/failed',
     failureFlash: true
-  }
+  },
 };
+
+function passportLoginByThirdparty(info, done) {
+  console.log('process :', JSON.stringify(info));
+  done(null, info);
+}
+
 
 passport.use('local', new LocalStrategy(authOpts.local, async (req, id, pwd, done) => {
   // console.log(req);
@@ -48,6 +59,17 @@ passport.use('local', new LocalStrategy(authOpts.local, async (req, id, pwd, don
   }
 }));
 
+passport.use('kakao', new KakaoStrategy(authOpts.kakao, (accessToken, refreshToken, profile, done) => {
+  let _profile = profile._json;
+  passportLoginByThirdparty({
+    'type': 'kakao',
+    'id': _profile.id,
+    'name': _profile.properties.nickname,
+    'email': _profile.id,
+    'token': accessToken
+  }, done);
+}));
+
 // router.post('/local', function(req,res, next) {
 //   res.send(`<h1>Custom Property Value: ${req.body.id}</h1>`);
 
@@ -72,5 +94,9 @@ router.get('/logout', (req, res, next) => {
   });
 });
 
+
+// kakao 로그인 / 콜백 연동
+router.get('/kakao', passport.authenticate('kakao'));
+router.get('/kakao_oauth', passport.authenticate('kakao', authOpts.redirect));
 
 module.exports = router;

@@ -1,4 +1,5 @@
 var express = require('express');
+const { getNowDateToYYMMDD } = require('../CommenUtil');
 var router = express.Router();
 const {init: dbInit, dbQuery, getTodayMovies} = require("../controllers/dbController");
 // let dbUser = await dbQuery("GET", "SELECT * FROM user WHERE email = ?", [email]);
@@ -20,7 +21,7 @@ router.get('/', async (req, res, next) => {
 // get movie (영화 장르)
 // SELECT * FROM `movie_review` WHERE movie_id = "20194501"
 router.get('/genore', async (req, res, next) => {
-    let params = req.body.genore; // req.body.genore
+    let params = req.query.genore; // req.body.genore
     let sql = "SELECT * FROM `movie` WHERE production_status = '개봉' AND genore LIKE '%"+params+"%'"; 
     try {
         let queryRes = await dbQuery("GET", sql, []);
@@ -63,6 +64,7 @@ router.get('/rank', async (req, res, next) => {
     // res.json({state: queryRes.state});
 });
 
+
 // get movie (review의 rating_num 평균 높은 순 + graph)
 // select a.*, b.*, c.* from movie as a,
 // (SELECT movie_id, AVG(rating_num) rating_num 
@@ -100,7 +102,7 @@ router.get('/rating', async (req, res, next) => {
 // get review (like 순)
 router.get('/review', async (req, res, next) => {
     let sql = "SELECT * FROM `movie_review` WHERE movie_id = ? ORDER BY like_num DESC"; 
-    let params = [req.body.movie_id];
+    let params = [req.query.movie_id];
     // let params = [req.body.movie_id];
     try {
         let queryRes = await dbQuery("GET", sql, params);
@@ -112,9 +114,61 @@ router.get('/review', async (req, res, next) => {
     }
     // res.json({state: queryRes.state});
 });
+/*
+*/
+router.post('/review/write', async (req, res, next) => {
+    let sql = "INSERT INTO `movie_review`(`movie_id`, `site`, `created`, `writer`, `comment`, `like_num`, `rating_num`)" +
+    " VALUES (?,?,?,?, ?,?,?)";
+    let nowDate = getNowDateToYYMMDD();
+    // console.log(nowDate);
+    let params = [req.body.movie_id, "this", nowDate, req.body.writer,
+        req.body.comment, 0, req.body.rating_num];
+
+    try {
+        let queryRes = await dbQuery("POST", sql, params);
+        // console.log(queryRes);
+        res.json({result: queryRes.state});
+    } catch (err) {
+        console.log(err);
+        res.json({error: err});
+    }
+});
+
+router.post('/review/edit', async (req, res, next) => {
+    let sql = "UPDATE `movie_review` SET `created`=?, `comment`=?,`rating_num`=? "
+    +"WHERE idx = ? AND movie_id = ? AND writer = ?";
+    let nowDate = getNowDateToYYMMDD();
+    // console.log(nowDate);
+    let params = [nowDate, req.body.comment, req.body.rating_num, req.body.idx, req.body.movie_id, req.body.writer];
+
+    try {
+        let queryRes = await dbQuery("POST", sql, params);
+        // console.log(queryRes);
+        res.json({result: queryRes.state});
+    } catch (err) {
+        console.log(err);
+        res.json({error: err});
+    }
+});
+
+router.post('/review/delete', async (req, res, next) => {
+    let sql = "DELETE FROM `movie_review` WHERE idx = ? AND movie_id = ? AND writer = ?";
+    let params = [req.body.idx, req.body.movie_id, req.body.writer];
+
+    try {
+        let queryRes = await dbQuery("POST", sql, params);
+        // console.log(queryRes);
+        res.json({result: queryRes.state});
+    } catch (err) {
+        console.log(err);
+        res.json({error: err});
+    }
+});
+
+
 
 router.get('/search', async (req, res, next) => {
-    let params = req.body.text; // req.body.text
+    let params = req.query.text; // req.body.text
     let sql = "SELECT * FROM `movie` WHERE title LIKE '"+params+"%'";
     try {
         let queryRes = await dbQuery("GET", sql, params);
