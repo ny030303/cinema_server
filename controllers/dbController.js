@@ -15,7 +15,8 @@ let connection;
 module.exports = {
   init: dbInit,
   dbQuery: dbQuery,
-  getTodayMovies: getTodayMovies
+  getTodayMovies: getTodayMovies,
+  getMovies:getMovies
 };
 
 //     connection.query('SELECT * FROM user', function (error, results, fields) {
@@ -96,5 +97,11 @@ async function getTodayMovies() {
       SELECT a.*, b.* FROM \`movie\` a inner join \`movie_score\` b on a.movie_id = b.movie_id 
       where  DATE_FORMAT(now(), '%Y-%m-%d') = left(b.created, 10)
       order by b.reservation_rate desc`;
+  return await dbConnQuery(conn, "GET", sql, []);
+}
+
+async function getMovies() {
+  let conn = await dbInit();
+  let sql = `SELECT * FROM movie `;
   return await dbConnQuery(conn, "GET", sql, []);
 }

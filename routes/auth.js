@@ -7,6 +7,7 @@ const {init: dbInit, dbQuery, getTodayMovies} = require("../controllers/dbContro
 const KakaoStrategy = require('passport-kakao').Strategy;
 // const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
+const { formDataUpload } = require('../CommenUtil');
 
 const router = express.Router();
 
@@ -75,7 +76,7 @@ passport.use('kakao', new KakaoStrategy(authOpts.kakao, (accessToken, refreshTok
 
 // });
 
-router.post('/local', passport.authenticate('local', authOpts.redirect));
+router.post('/local', formDataUpload.none(), passport.authenticate('local', authOpts.redirect));
 
 
 router.get('/failed', function (req, res, next) {

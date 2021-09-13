@@ -45,6 +45,7 @@ exports.crawleMovieReview = async (driver, movie, mHref)  =>{
                                 let sql =  "INSERT INTO movie_review VALUES (?,?,?, ?,?,?,?)";
                                 let params = [revJson.movie_id, revJson.site, revJson.created, revJson.writer, revJson.comment, revJson.like_num, revJson.rating_num];
                                 let queryRes = await dbQuery("INSERT", sql, params);
+                                
                             } catch (error) {
                                 console.log("이미 있거나 db 오류");
                             }

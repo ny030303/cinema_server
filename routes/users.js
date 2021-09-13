@@ -2,6 +2,7 @@ var express = require('express');
 const {init: dbInit, dbQuery, getTodayMovies} = require("../controllers/dbController");
 var router = express.Router();
 const fs = require('fs');
+const { formDataUpload } = require('../CommenUtil');
 // const bcrypt = require('bcrypt');
 // const saltRounds = 10;
 
@@ -41,15 +42,10 @@ router.post('/uploadBase64', (req, res, next) => {
 //     // res.send(`<h1>Custom Property Value: ${req.file}</h1>`);
 // });
 
-const multer = require('multer');
-var storage = multer.diskStorage({
-  destination: function (req, file, cb) {cb(null,'./public/images/users')},
-  filename: function (req, file, cb) { cb(null, `${Date.now()}_${file.originalname}`) }
-});
-const upload = multer({storage: storage});
+
 
 // id, name, pwd, prifile_url (file)
-router.post('/signup', upload.single('img'), async (req, res, next) => {
+router.post('/signup', formDataUpload.single('img'), async (req, res, next) => {
   console.log(req.file);
   let sql = "INSERT INTO user(id, name, pwd, profile_url) VALUES (?,?,?,?)";
   let params = [req.body.id, req.body.name, req.body.pwd, req.file.filename];

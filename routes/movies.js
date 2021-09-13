@@ -1,5 +1,5 @@
 var express = require('express');
-const { getNowDateToYYMMDD } = require('../CommenUtil');
+const { getNowDateToYYMMDD, formDataUpload } = require('../CommenUtil');
 var router = express.Router();
 const {init: dbInit, dbQuery, getTodayMovies} = require("../controllers/dbController");
 // let dbUser = await dbQuery("GET", "SELECT * FROM user WHERE email = ?", [email]);
@@ -116,7 +116,7 @@ router.get('/review', async (req, res, next) => {
 });
 /*
 */
-router.post('/review/write', async (req, res, next) => {
+router.post('/review/write', formDataUpload.none(), async (req, res, next) => {
     let sql = "INSERT INTO `movie_review`(`movie_id`, `site`, `created`, `writer`, `comment`, `like_num`, `rating_num`)" +
     " VALUES (?,?,?,?, ?,?,?)";
     let nowDate = getNowDateToYYMMDD();
@@ -134,7 +134,7 @@ router.post('/review/write', async (req, res, next) => {
     }
 });
 
-router.post('/review/edit', async (req, res, next) => {
+router.post('/review/edit', formDataUpload.none(), async (req, res, next) => {
     let sql = "UPDATE `movie_review` SET `created`=?, `comment`=?,`rating_num`=? "
     +"WHERE idx = ? AND movie_id = ? AND writer = ?";
     let nowDate = getNowDateToYYMMDD();
@@ -151,7 +151,7 @@ router.post('/review/edit', async (req, res, next) => {
     }
 });
 
-router.post('/review/delete', async (req, res, next) => {
+router.post('/review/delete', formDataUpload.none(), async (req, res, next) => {
     let sql = "DELETE FROM `movie_review` WHERE idx = ? AND movie_id = ? AND writer = ?";
     let params = [req.body.idx, req.body.movie_id, req.body.writer];
 
@@ -164,6 +164,7 @@ router.post('/review/delete', async (req, res, next) => {
         res.json({error: err});
     }
 });
+
 
 
 
