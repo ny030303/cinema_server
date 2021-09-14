@@ -13,7 +13,6 @@ const {init: dbInit, dbQuery} = require("../../controllers/dbController");
 
     try {
         await dbInit();
-        let pages = await getJsonData("pages.json");
         
         // Navigate to Url
         await driver.get('https://www.kobis.or.kr/kobis/business/mast/mvie/searchMovieList.do');
@@ -74,11 +73,8 @@ const {init: dbInit, dbQuery} = require("../../controllers/dbController");
                             // console.log(href);
                             let urlArr = href.split("/"); 
                             let imgLink = `${Date.now()}_${urlArr[urlArr.length-1]}`;
-                            if(urlArr[urlArr.length-1] == "searchMovieList.do#") {
-                                revJson.poster_img = "";
-                            } else {
-                                revJson.poster_img = imgLink;
-                            }
+                            if(urlArr[urlArr.length-1] == "searchMovieList.do#") { revJson.poster_img = "";} 
+                            else { revJson.poster_img = imgLink; }
                             
                             revJson.memo = (await driver.findElement(By.css(".item_tab.basic > div.ovf.info.info1 > dl > dd:nth-child(8)")).getText()).trim();
                             revJson.updated_date = (await driver.findElement(By.css(".item_tab.basic > div.bar_top > div")).getText()).trim().split("최종수정: ")[1].split(" 수정요청")[0];
