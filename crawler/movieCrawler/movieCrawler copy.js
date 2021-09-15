@@ -34,47 +34,59 @@ const getMListView = async (driver) => {
     await driver.manage().setTimeouts(implicit_wait);
     return await driver.findElements(By.css("#content > div.rst_sch > table > tbody > tr"));
 }
+const findNumIdxInArrView = async (arrView, num) => {
+  let arr = [];
+  for(const p of arrView) arr.push(Number(await p.getText()));
+  let idx = arr.findIndex((v) => v == num);
+  return idx;
+}
 
 (async function example() {
     const driver = loadSelenium();
     try {
-        let mListView = await getMListView(driver);
-        await driver.manage().setTimeouts(implicit_wait);
-        let pageBtns = await driver.findElements(By.css("#pagingForm > div > ul > li a"));
-        let attempts = 0;
-        while(attempts < pageBtns.length) {
-            try {
-                let nowNum = await pageBtns[attempts].getText();
-                for(const movies of mListView.division(10)) {
-                    await Promise.all(movies.map( async (v,i) => movieInfoByWebDriver(nowNum, i)));
-                }
-                pageBtns = await driver.findElements(By.css("#pagingForm > div > ul > li a"));
-                await driver.manage().setTimeouts(implicit_wait);
-                attempts += 1;
-                await pageBtns[attempts].click();
-                await driver.manage().setTimeouts(implicit_wait);
-                if(attempts >= pageBtns.length) {
-                    try {
-                        let nextBtn = await driver.findElement(By.css("#pagingForm > div > a.btn.next"));
-                        await nextBtn.click();
-                        await driver.manage().setTimeouts(implicit_wait);
-                        pageBtns = await driver.findElements(By.css("#pagingForm > div > ul > li a"));
-                        await driver.manage().setTimeouts(implicit_wait);
-                        attempts = 0;
-                        console.log(attempts);
-                    } catch (error) {
-                        console.log(error);
-                        console.log("while 나가기");
-                        break;
-                    }
-                }
-            } catch (error) {
-                console.log("this?: " + error);
-                pageBtns = await driver.findElements(By.css("#pagingForm > div > ul > li a"));
-                mListView = await driver.findElements(By.css("#content > div.rst_sch > table > tbody > tr"));
-                // break;
+      let mListView = await getMListView(driver);
+        while(true) {
+          await driver.manage().setTimeouts(implicit_wait);
+          let pageBtns = await driver.findElements(By.css("#pagingForm > div > ul > li a"));
+          await driver.manage().setTimeouts(implicit_wait);
+          let numArr = [];
+          for(const p of pageBtns) numArr.push(Number(await p.getText()));
+
+          for(let btn of numArr) {
+            await driver.manage().setTimeouts(implicit_wait);
+            mListView = await driver.findElements(By.css("#content > div.rst_sch > table > tbody > tr"));
+            await driver.manage().setTimeouts(implicit_wait);
+            pageBtns = await driver.findElements(By.css("#pagingForm > div > ul > li a"));
+            await driver.manage().setTimeouts(implicit_wait);
+
+            let idx = await findNumIdxInArrView(pageBtns, btn);
+            await driver.manage().setTimeouts(implicit_wait);
+            try {await pageBtns[idx].click();} 
+            catch (error) {
+              console.log(error);
+              continue;
             }
+            await driver.sleep(2000);
+            console.log("idx: "+ idx);
+            await driver.manage().setTimeouts(implicit_wait);
+            for(const movies of mListView.division(10)) {
+              await Promise.all(movies.map( async (v,i) => await movieInfoByWebDriver(btn, i)));
+            }
+
+            if(idx >= 9) {
+              try {
+                await driver.findElement(By.css("#pagingForm > div > a.btn.next")).click();
+                await driver.sleep(500);
+                pageBtns = await driver.findElements(By.css("#pagingForm > div > ul > li a"));
+              } catch (error) {
+                console.log("get out");
+                break; 
+              }
+            }
+          }
         }
+        
+
         await driver.sleep(500);
       } catch (error) {
         console.log(error);
@@ -85,14 +97,30 @@ const getMListView = async (driver) => {
 
 })();
 
+
+
 const movieInfoByWebDriver = async (nowNum, i) => {
     const driver = loadSelenium();
-    console.log(nowNum);
+    // console.log(nowNum);
     try {
         await driver.get('https://www.kobis.or.kr/kobis/business/mast/mvie/searchMovieList.do');
         await driver.manage().setTimeouts(implicit_wait);
         await (driver.findElement(By.css(".slt_comm #sOrderBy > option:nth-child(4)"))).click();
         await driver.sleep(2000);
+        while(true) {
+          let pageBtns = await driver.findElements(By.css("#pagingForm > div > ul > li a"));
+          await driver.manage().setTimeouts(implicit_wait);
+          let idx = await findNumIdxInArrView(pageBtns, nowNum);
+          if(idx >= 0) {
+            await pageBtns[idx].click();
+            await driver.sleep(2000);
+            break;
+          }
+          let nextBtn = await driver.findElement(By.css("#pagingForm > div > a.btn.next"));
+          await nextBtn.click();
+          await driver.sleep(2000);
+        }
+
         let mListView = await driver.findElements(By.css("#content > div.rst_sch > table > tbody > tr"));
         await driver.manage().setTimeouts(implicit_wait);
         let title = mListView[i].findElement(By.css("td:nth-child(1) > span > a"));
@@ -125,7 +153,7 @@ const movieInfoByWebDriver = async (nowNum, i) => {
         await driver.manage().setTimeouts(implicit_wait);
         await console.log(mJson);
     } catch (error) {
-        
+        console.log(error);
     } finally {
         try {
           await driver.close();
