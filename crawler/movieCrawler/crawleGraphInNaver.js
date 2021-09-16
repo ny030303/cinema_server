@@ -72,7 +72,6 @@ exports.crawleGraph2 = async () => {
   } catch (error) {
     console.log(error);
   }
-  
 }
 
 exports.crawleGraph = async function crawleGraph() {

@@ -47,11 +47,11 @@ let {crawleGraph} = require('./crawler/movieCrawler/crawleGraphInNaver');
 (async () => {
   await crawleReservationRate();
   // await crawleGraph();
-  await require('./crawler/movieCrawler/crawleGraphInNaver').crawleGraph2();
+  // await require('./crawler/movieCrawler/crawleGraphInNaver').crawleGraph2();
 })();
 let crawlerInterval = setInterval(async () => {
   await crawleReservationRate();
-  await require('./crawler/movieCrawler/crawleGraphInNaver').crawleGraph2();
+  // await require('./crawler/movieCrawler/crawleGraphInNaver').crawleGraph2();
   // await crawleGraph();
 }, 300000);
 
