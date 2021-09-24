@@ -3,12 +3,31 @@ const {init: dbInit, dbQuery, getTodayMovies} = require("../controllers/dbContro
 var router = express.Router();
 const fs = require('fs');
 const { formDataUpload } = require('../CommenUtil');
+const { session } = require('passport');
 // const bcrypt = require('bcrypt');
 // const saltRounds = 10;
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
   res.send('respond with a resource');
+});
+
+router.get('/review', async function(req, res, next) {
+  console.log(req.user);
+  if(req.user) { // 유저 로그인 중
+    let movieSql = "SELECT * FROM `movie` WHERE movie_id in(SELECT DISTINCT movie_id FROM `movie_review` WHERE writer = ?)";
+    let reviewSql = "SELECT * FROM `movie_review` WHERE writer = ?";
+    try {
+        let movieQueryRes = await dbQuery("GET", movieSql, [req.user.id]);
+        let reviewQueryRes = await dbQuery("GET", reviewSql, [req.user.id]);
+        res.json({movies: movieQueryRes.row, reviews: reviewQueryRes.row});
+    } catch (err) {
+        console.log(err);
+        res.json({error: err});
+    }
+  } else {
+    res.status(201).json({result: 0});
+  }
 });
 
 // router.post('/signup', async (req, res, next) => {

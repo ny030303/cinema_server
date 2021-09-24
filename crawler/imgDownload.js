@@ -18,9 +18,14 @@ exports.downloadImageToUrl = (url,fileName, callback) => {
          data.push(chunk);                                                         
       });                                                                         
 
-      response.on('end', () => {                    
-         fs.writeFileSync(`./public/images/uploads/${fileName}`, data.read());
-         console.log("img upload Success");
+      response.on('end', () => {
+         try {
+            fs.writeFileSync(`./public/images/uploads/${fileName}`, data.read());
+            console.log("img upload Success");
+         } catch (error) {
+            console.log("img upload Failed : " + error);
+         }
+         
       });                                                                         
    }).end();
 };

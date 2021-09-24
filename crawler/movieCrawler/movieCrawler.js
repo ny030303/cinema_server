@@ -24,14 +24,14 @@ const loadSelenium = () => {
     // options.headless();
     options.addArguments('--headless --disable-gpu');     // GPU 사용 안함
     options.addArguments('lang=ko_KR');      //  언어 설정
-    return new Builder().withCapabilities(Capabilities.chrome()).setChromeOptions(options).build();
-    // return new Builder().withCapabilities(Capabilities.chrome()).setChromeOptions(new chrome.Options().headless()).build();
+    // return new Builder().withCapabilities(Capabilities.chrome()).setChromeOptions(options).build();
+    return new Builder().withCapabilities(Capabilities.chrome()).setChromeOptions(new chrome.Options().headless()).build();
 }
 
 const getMListView = async (driver) => {
     await driver.get('https://www.kobis.or.kr/kobis/business/mast/mvie/searchMovieList.do');
     await driver.manage().setTimeouts(implicit_wait);
-    await (driver.findElement(By.css(".slt_comm #sOrderBy > option:nth-child(2)"))).click();
+    await (driver.findElement(By.css(".slt_comm #sOrderBy > option:nth-child(4)"))).click();
     await driver.manage().setTimeouts(implicit_wait);
     return await driver.findElements(By.css("#content > div.rst_sch > table > tbody > tr"));
 }
@@ -145,6 +145,7 @@ const getMovieJSON = async (listView, driver, i) => {
     return mJson;
   } catch (error) {
     console.log("movieJSON ERR - ", error);
+    return {error: error}
   }
 }
 
@@ -197,7 +198,7 @@ const movieInfoByWebDriver = async (nowNum, i) => {
     try {
         await driver.get('https://www.kobis.or.kr/kobis/business/mast/mvie/searchMovieList.do');
         await driver.manage().setTimeouts(implicit_wait);
-        await (driver.findElement(By.css(".slt_comm #sOrderBy > option:nth-child(2)"))).click();
+        await (driver.findElement(By.css(".slt_comm #sOrderBy > option:nth-child(4)"))).click();
         await driver.sleep(2000);
         while(true) {
           let pageBtns = await driver.findElements(By.css("#pagingForm > div > ul > li a"));
@@ -216,7 +217,8 @@ const movieInfoByWebDriver = async (nowNum, i) => {
         await driver.manage().setTimeouts(implicit_wait);
         let mJson = await getMovieJSON(mListView, driver, i);
         // console.log(mJson);
-        await pushMovieQuery(mJson);
+        if(!mJson.error) await pushMovieQuery(mJson);
+        
     } catch (error) {
         console.log(error);
     } finally {

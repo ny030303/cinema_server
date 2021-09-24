@@ -31,6 +31,45 @@ host => 192.168.31.31:54000 일때 기준
 - 192.168.31.31:54000/auth/logout
     ::: (GET) logout 요청 처리
 
+- 192.168.31.31:54000/users/review
+    ::: (GET) 유저가 남긴 리뷰 + 해당 movie
+    ex.)
+        로그인 OFF -> return  {"result": 0}
+        로그인 ON -> return 
+        {
+            "movies": [
+                {
+                    "movie_id": "19848168",
+                    "title": "블러드 심플",
+                    "eng_title": "Blood Simple",
+                    "production_year": "1998",
+                        -(생략)-
+                }
+            ],
+            "reviews": [
+                {
+                    "idx": 2,
+                    "movie_id": "19848168",
+                    "site": "this",
+                    "created": "2021-09-10 11:26:40",
+                    "writer": "admin",
+                    "comment": "text comment",
+                    "like_num": 0,
+                    "rating_num": 8
+                },
+                {
+                    "idx": 3,
+                    "movie_id": "19848168",
+                    "site": "this",
+                    "created": "2021-09-10 11:28:20",
+                    "writer": "admin",
+                    "comment": "text comment2",
+                    "like_num": 0,
+                    "rating_num": 8
+                }
+            ]
+        }
+
 
 
 === POST 형식 ===
