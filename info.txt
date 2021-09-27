@@ -56,16 +56,6 @@ host => 192.168.31.31:54000 일때 기준
                     "comment": "text comment",
                     "like_num": 0,
                     "rating_num": 8
-                },
-                {
-                    "idx": 3,
-                    "movie_id": "19848168",
-                    "site": "this",
-                    "created": "2021-09-10 11:28:20",
-                    "writer": "admin",
-                    "comment": "text comment2",
-                    "like_num": 0,
-                    "rating_num": 8
                 }
             ]
         }
@@ -74,7 +64,7 @@ host => 192.168.31.31:54000 일때 기준
 
 === POST 형식 ===
 - 192.168.31.33:54000/auth/local
-    ::: 로그인 부분 JSON 형식으로  id, pwd 필요 (이름을 지킬 것)
+    ::: 로그인 부분 JSON 형식 or form-data 형식으로  id, pwd 필요 (이름을 지킬 것)
     ex.) { "id":"test", "pwd":"1234" }
 
 - 192.168.31.185:54000/users/signup
