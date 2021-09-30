@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "nodemon ./bin/www",
-    "tpstart": "yarn ts-node ./crawler/areaCrawler.js"
+    "tpstart": "yarn ts-node ./crawler/areaCrawler.js",
+    "docker-update": "docker-compose up -d"
   },
   "dependencies": {
     "chromedriver": "^93.0.1",

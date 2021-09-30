@@ -21,7 +21,7 @@ var authRouter = require('./routes/auth');
 dotenv.config(); // env
 var app = express();
 
-var {init} = require('./controllers/dbController');
+var {init, dbQuery} = require('./controllers/dbController');
 init();
 
 Array.prototype.division = function (n) {
@@ -42,24 +42,31 @@ console.log = (...params) => {
   prevConsoleLog('(' + callerSrc.substr(callerSrc.lastIndexOf('\\') + 1), params);
 };
 
-let {crawleReservationRate} = require('./crawler/movieCrawler/crawleReservationRateRank');
-let {crawleGraph} = require('./crawler/movieCrawler/crawleGraphInNaver');
-(async () => {
-  await crawleReservationRate();
-  // await crawleGraph();
-  // await require('./crawler/movieCrawler/crawleGraphInNaver').crawleGraph2();
-})();
-let crawlerInterval = setInterval(async () => {
-  await crawleReservationRate();
-  // await require('./crawler/movieCrawler/crawleGraphInNaver').crawleGraph2();
-  // await crawleGraph();
-}, 300000);
+// let {crawleReservationRate} = require('./crawler/movieCrawler/crawleReservationRateRank');
+// let {crawleGraph} = require('./crawler/movieCrawler/crawleGraphInNaver');
+// (async () => {
+//   await crawleReservationRate();
+//   // await crawleGraph();
+//   // await require('./crawler/movieCrawler/crawleGraphInNaver').crawleGraph2();
+// })();
+// let crawlerInterval = setInterval(async () => {
+//   await crawleReservationRate();
+//   // await require('./crawler/movieCrawler/crawleGraphInNaver').crawleGraph2();
+//   // await crawleGraph();
+// }, 300000);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 app.use(morgan('dev'));
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser(process.env.COOKIE_SECRET));
+
 app.use(session({
   resave: false,
   saveUninitialized: false,
@@ -74,12 +81,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 
-app.use(bodyParser.json({limit: '50mb'}));
-app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(express.static(path.join(__dirname, 'public')));
 
 
@@ -110,8 +112,17 @@ app.use(function(err, req, res, next) {
 });
 
 passport.serializeUser((user, done) => done(null, user));
-passport.deserializeUser( (user, done) => {
-  done(null, user);
+passport.deserializeUser(async (user, done) => {
+  
+  try {
+    let dbUser = await dbQuery("GET", "SELECT * FROM user WHERE id = ?", [user.id]);
+    let ur = dbUser.row[0];
+    if(ur) {
+      done(null, ur);
+    }
+  } catch (error) {
+    done(null,{err:error});
+  }
 });
 
 module.exports = app;

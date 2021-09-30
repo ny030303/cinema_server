@@ -70,17 +70,28 @@ host => 192.168.31.31:54000 일때 기준
 - 192.168.31.185:54000/users/signup
     ::: 회원가입 부분 form-data 형식으로  id, name, pwd, img(file) 필요 (이름을 지킬 것)
 
+
+=== PUT 형식 ===
 - 192.168.31.185:54000/movies/review/write
     ::: 리뷰 작성 하기 form-data 형식으로  
-        movie_id, writer(user Table의 id), comment, rating_num(평점) 필요 (이름을 지킬 것)
+        movie_id, comment, rating_num(평점) 필요 (이름을 지킬 것)
+    
+    ex.) 로그인 OFF -> return  {"result": 0}
+        로그인 ON -> return  { "result": true }
 
 - 192.168.31.185:54000/movies/review/edit
     ::: 리뷰 수정 하기 form-data 형식으로  
-        idx, movie_id, writer(user Table의 id), comment, rating_num(평점) 필요 (이름을 지킬 것)
+        idx, movie_id, comment, rating_num(평점) 필요 (이름을 지킬 것)
+
+    ex.) 로그인 OFF -> return  {"result": 0}
+        로그인 ON -> return  { "result": true }
 
 - 192.168.31.185:54000/movies/review/delete
     ::: 리뷰 삭제 하기 form-data 형식으로  
-        idx, movie_id, writer(user Table의 id) 필요 (이름을 지킬 것)
+        idx, movie_id  필요 (이름을 지킬 것)
+
+    ex.) 로그인 OFF -> return  {"result": 0}
+        로그인 ON -> return  { "result": true }
 
 ==========================
 

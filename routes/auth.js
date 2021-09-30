@@ -42,10 +42,10 @@ passport.use('local', new LocalStrategy(authOpts.local, async (req, id, pwd, don
     let user = dbUser.row[0];
     console.log(user);
     if (user) {
-      let result = pwd == user.pwd; // pwd check
+      let result = req.body.pwd == user.pwd; // pwd check
       console.log(result);
       if (result) {
-        done(null, user);
+        done(null, dbUser.row[0]);
       }
       else {
         done(null, false, {message: '비밀번호가 일치하지 않습니다.'});

@@ -9,6 +9,13 @@ const db_info = {
   password: '',
   database: 'cinema'
 }
+// const db_info = {
+//   host: 'db',
+//   port: '3306',
+//   user: 'root',
+//   password: 'root',
+//   database: 'cinema'
+// }
 let pool = mysql.createPool(db_info);
 let connection;
 

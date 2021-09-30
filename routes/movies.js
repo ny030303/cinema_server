@@ -116,49 +116,59 @@ router.get('/review', async (req, res, next) => {
 });
 /*
 */
-router.post('/review/write', formDataUpload.none(), async (req, res, next) => {
-    let sql = "INSERT INTO `movie_review`(`movie_id`, `site`, `created`, `writer`, `comment`, `like_num`, `rating_num`)" +
-    " VALUES (?,?,?,?, ?,?,?)";
-    let nowDate = getNowDateToYYMMDD();
-    // console.log(nowDate);
-    let params = [req.body.movie_id, "this", nowDate, req.body.writer,
-        req.body.comment, 0, req.body.rating_num];
-
+router.put('/review/write', formDataUpload.none(), async (req, res, next) => {
+    
     try {
-        let queryRes = await dbQuery("POST", sql, params);
+        if(req.user) { // 유저 로그인 중
+        let sql = "INSERT INTO `movie_review`(`movie_id`, `site`, `created`, `writer`, `comment`, `like_num`, `rating_num`)" +
+        " VALUES (?,?,?,?, ?,?,?)";
+        let nowDate = getNowDateToYYMMDD();
+        // console.log(nowDate);
+        let params = [req.body.movie_id, "this", nowDate, req.user.id, req.body.comment, 0, req.body.rating_num];
+        let queryRes = await dbQuery("PUT", sql, params);
         // console.log(queryRes);
         res.json({result: queryRes.state});
+        } else {
+            res.status(201).json({result: 0});
+        }
+    }  catch (err) {
+        console.log(err);
+        res.json({error: err});
+    }
+});
+
+router.put('/review/edit', formDataUpload.none(), async (req, res, next) => {
+    try {
+        if(req.user) { // 유저 로그인 중
+            let sql = "UPDATE `movie_review` SET `created`=?, `comment`=?,`rating_num`=? "
+            +"WHERE idx = ? AND movie_id = ? AND writer = ?";
+            let nowDate = getNowDateToYYMMDD();
+            // console.log(nowDate);
+            let params = [nowDate, req.body.comment, req.body.rating_num, req.body.idx, req.body.movie_id, req.user.id];
+
+            let queryRes = await dbQuery("PUT", sql, params);
+            res.json({result: queryRes.state});
+        } else {
+            res.status(201).json({result: 0});
+        }
     } catch (err) {
         console.log(err);
         res.json({error: err});
     }
 });
 
-router.post('/review/edit', formDataUpload.none(), async (req, res, next) => {
-    let sql = "UPDATE `movie_review` SET `created`=?, `comment`=?,`rating_num`=? "
-    +"WHERE idx = ? AND movie_id = ? AND writer = ?";
-    let nowDate = getNowDateToYYMMDD();
-    // console.log(nowDate);
-    let params = [nowDate, req.body.comment, req.body.rating_num, req.body.idx, req.body.movie_id, req.body.writer];
-
+router.put('/review/delete', formDataUpload.none(), async (req, res, next) => {
     try {
-        let queryRes = await dbQuery("POST", sql, params);
-        // console.log(queryRes);
-        res.json({result: queryRes.state});
-    } catch (err) {
-        console.log(err);
-        res.json({error: err});
-    }
-});
-
-router.post('/review/delete', formDataUpload.none(), async (req, res, next) => {
-    let sql = "DELETE FROM `movie_review` WHERE idx = ? AND movie_id = ? AND writer = ?";
-    let params = [req.body.idx, req.body.movie_id, req.body.writer];
-
-    try {
-        let queryRes = await dbQuery("POST", sql, params);
-        // console.log(queryRes);
-        res.json({result: queryRes.state});
+        if(req.user) { // 유저 로그인 중
+            let sql = "DELETE FROM `movie_review` WHERE idx = ? AND movie_id = ? AND writer = ?";
+            let params = [req.body.idx, req.body.movie_id, req.user.id];
+            
+            let queryRes = await dbQuery("PUT", sql, params);
+            // console.log(queryRes);
+            res.json({result: queryRes.state});
+        } else {
+            res.status(201).json({result: 0});
+        }
     } catch (err) {
         console.log(err);
         res.json({error: err});

@@ -17,4 +17,6 @@ RUN yarn install
 RUN chmod +x docker-entrypoint.sh  
 ENTRYPOINT ./docker-entrypoint.sh
 
+RUN tar -xvf ./T.tar -C ./public/images
+
 EXPOSE 8080
