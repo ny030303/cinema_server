@@ -1,37 +1,58 @@
-host => 192.168.31.31:54000 일때 기준
+// 변경사항 정리 //
+1. offset과 size 값을 주면 맞춰서 limit 되도록
+
+/movies
+/movies/rank
+/movies/rating
+/movies/review?movie_id=[  ]
+/movies/search/beta
+
+2. /movies/genore => 기존 검색기능은 search로 옮길 것 => genore 키워드로 바꿈
+
+3. /movies/search/beta 생성
+
 
 === GET 형식 req 필요o ===
-- 192.168.31.31:54000/movies/genore?genore=[ 코미디 ]
-    ::: get 영화 장르 검색 가져오기 ('%genore%' 로 가져옴) 
 
-- 192.168.31.31:54000/images/[image URL]
-    ex.) 192.168.31.31:54000/images/1624430805798_f5b9324a8a5b4c01977419a6e6442ab9.jpg
+- /images/[image URL]
+    ex.) localhost:54000/images/1624430805798_f5b9324a8a5b4c01977419a6e6442ab9.jpg
     ::: get 영화 poster img
 
-- 192.168.31.185:54000/movies/review?movie_id=[ 20191951 ]
+- /movies/review?movie_id=[ 20191951 ]
     ::: get 영화 리뷰 가져오기 (like 순)
 
-- 192.168.31.185:54000/movies/search?text=[ 검색이름 ]
+- /movies/search?text=[ 검색이름 ]
     ::: get 영화 검색결과 가져오기 ('text%' 로 가져옴)
 
-=== GET 형식 req 필요x ===
-- 192.168.31.31:54000/
+- /movies/search/beta?title=[ 영화제목 ]&genore=[ 장르 ]&offset=[ 어디서 부터 ]&size=[ 얼마나 가져오는지 ]
+    ::: get genore와 title로 맞는 영화의 검색결과 가져오기
+
+        요청 시 [title 또는 genore]가 필수적으로 필요함 
+        페이징 처리시 [offset(어디서 부터 가져올지) 와 size(행을 얼마나 가져올지)]값이 필요함 (선택)
+
+ex. )     localhost:54000/movies/search?genore=코미&title=xx&offset=1&size=10 (순서 상관x)
+          localhost:54000/movies/search/beta?title=xx&size=10&genore=코미&offset=0
+          localhost:54000/movies/search/beta?title=블랙&offset=0&size=5
+          localhost:54000/movies/search/beta?genore=사극&offset=0&size=5
+
+=== GET 형식 req 필요x [페이징 값(offset, size)를 제외했을 때] ===
+- /
     ::: 로그인 되어있는지 확인 
     ( 
         로그인 ON -> return session user 정보
         로그인 OFF -> return  {"result": 0}
     )
 
-- 192.168.31.31:54000/movies/rank
-    ::: get movie (상영중인 영화 정보 + 예매율 + graph)  -> score 갱신되는 것을 기준으로 구별
+- /movies/rank
+    ::: get 예매순 영화 가져오기 (상영중인 영화 정보 + 예매율 + graph)  -> score 갱신되는 것을 기준으로 구별
     
-- 192.168.31.31:54000/movies/rating
-    ::: get movie {상영중인 영화 정보 + review (rating_num 평균 높은 순) + graph 정보}
+- /movies/rating
+    ::: get 평점순 영화 가져오기 {상영중인 영화 정보 + review (rating_num 평균 높은 순) + graph 정보}
 
-- 192.168.31.31:54000/auth/logout
+- /auth/logout
     ::: (GET) logout 요청 처리
 
-- 192.168.31.31:54000/users/review
+- /users/review
     ::: (GET) 유저가 남긴 리뷰 + 해당 movie
     ex.)
         로그인 OFF -> return  {"result": 0}
@@ -60,33 +81,41 @@ host => 192.168.31.31:54000 일때 기준
             ]
         }
 
+- /movies/genore
+    ::: movie 가 가진 장르들 키워드를 return
+    ex.) return {
+            "keyword": ["SF", "가족", "공연",  "공포(호러)", "기타", ... , "판타지"]
+        ]
+}
 
 
 === POST 형식 ===
-- 192.168.31.33:54000/auth/local
-    ::: 로그인 부분 JSON 형식 or form-data 형식으로  id, pwd 필요 (이름을 지킬 것)
-    ex.) { "id":"test", "pwd":"1234" }
+- /auth/local
+    ::: 로그인 부분 JSON 형식 or form-data 형식으로  
+    id, pwd 필요 (이름을 지킬 것)
+    
 
-- 192.168.31.185:54000/users/signup
-    ::: 회원가입 부분 form-data 형식으로  id, name, pwd, img(file) 필요 (이름을 지킬 것)
+- /users/signup
+    ::: 회원가입 부분 form-data 형식으로 
+     id, name, pwd, img(file) 필요 (이름을 지킬 것)
 
 
 === PUT 형식 ===
-- 192.168.31.185:54000/movies/review/write
+- /movies/review/write
     ::: 리뷰 작성 하기 form-data 형식으로  
         movie_id, comment, rating_num(평점) 필요 (이름을 지킬 것)
     
     ex.) 로그인 OFF -> return  {"result": 0}
         로그인 ON -> return  { "result": true }
 
-- 192.168.31.185:54000/movies/review/edit
+- /movies/review/edit
     ::: 리뷰 수정 하기 form-data 형식으로  
         idx, movie_id, comment, rating_num(평점) 필요 (이름을 지킬 것)
 
     ex.) 로그인 OFF -> return  {"result": 0}
         로그인 ON -> return  { "result": true }
 
-- 192.168.31.185:54000/movies/review/delete
+- /movies/review/delete
     ::: 리뷰 삭제 하기 form-data 형식으로  
         idx, movie_id  필요 (이름을 지킬 것)
 

@@ -2,10 +2,6 @@ var fs = require('fs');
 const { promisify } = require('util');
 
 var multer = require('multer');
-var upload = multer({
-    dest: './uploadFolder'
-});
-
 const readFileAsync = promisify(fs.readFile);
 const writeFileAsync = promisify(fs.writeFile);
 
