@@ -65,13 +65,19 @@ router.post('/uploadBase64', (req, res, next) => {
 
 // id, name, pwd, prifile_url (file)
 router.post('/signup', formDataUpload.single('img'), async (req, res, next) => {
-  console.log(req.file);
-  let sql = "INSERT INTO user(id, name, pwd, profile_url) VALUES (?,?,?,?)";
-  let params = [req.body.id, req.body.name, req.body.pwd, req.file.filename];
-  let queryRes = await dbQuery("INSERT", sql, params);
-  console.log(queryRes);
+  try {
+    console.log(req.file);
+    let sql = "INSERT INTO user(id, name, pwd, profile_url) VALUES (?,?,?,?)";
+    let params = [req.body.id, req.body.name, req.body.pwd, req.file.key];
+    // let params = [req.body.id, req.body.name, req.body.pwd, req.file.filename];
+    let queryRes = await dbQuery("INSERT", sql, params);
+    console.log(queryRes);
 
-  res.json({state: queryRes.state});
+    res.json({state: queryRes.state});
+  } catch (error) {
+    console.log(error);
+  }
+  
 });
 
 // SELECT * FROM movie_review WHERE LENGTH(comment) < 1
