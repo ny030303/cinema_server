@@ -13,6 +13,8 @@
 # production
 /build
 
+dockerize-linux-amd64-v0.6.1.tar.gz
+google-chrome-stable_94.0.4606.71-1_amd64.deb
 .env
 # misc
 .DS_Store
