@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const fs = require('fs');
+const { awsS3 } = require('../CommenUtil');
 /* GET home page. */
 router.get('/', function (req, res, next) {
   try {
@@ -43,6 +44,27 @@ router.get('/images/:fileName', function (req, res, next) {
     }
   });
 
+});
+
+router.get('/images/beta/:fileName', function (req, res, next) {
+  let extname = String(req.params.fileName.split('.')[1].toLowerCase()); // ex. jpg, jpeg
+  let contentType = mimeTypes[extname];
+  var jsonParams = {Bucket: 'cinema-s3-upload/posters', Key: req.params.fileName};
+  awsS3.getObject(jsonParams, (err, data) => {
+    if (err) {
+        throw err;
+    }
+    res.writeHead(200, { 'Content-Type': contentType });
+    res.end(data.Body, 'utf-8');
+    // // dataURL
+    // let dataURL = "data:image/jpeg;base64," + encode(data.Body);
+
+    // // blobURL
+    // const blob = new Blob([data.Body], {
+    //     type: data.ContentType
+    // });
+    // const blobURL = URL.createObjectURL(blob);
+  });
 });
 
 module.exports = router;

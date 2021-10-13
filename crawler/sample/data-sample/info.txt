@@ -1,5 +1,0 @@
-http://www.cgv.co.kr/common/showtimes/iframeTheater.aspx?areacode=영화관_지역&theatercode=영화관&date=날짜
-http://www.cgv.co.kr/common/showtimes/iframeTheater.aspx?areacode=01&theatercode=0056&date=20210610
-
-selector
-#contents > div.sect-common > div > div.sect-city > ul > li

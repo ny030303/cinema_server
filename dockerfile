@@ -40,6 +40,8 @@ WORKDIR /usr/src/app
 COPY . .
 
 RUN chmod +x ./docker-entrypoint.sh
-ENTRYPOINT ./docker-entrypoint.sh
+# ENTRYPOINT ./docker-entrypoint.sh
+ENTRYPOINT ["sh", "./docker-entrypoint.sh"]
+
 
 EXPOSE 8080
