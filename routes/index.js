@@ -52,18 +52,19 @@ router.get('/images/beta/:fileName', function (req, res, next) {
   var jsonParams = {Bucket: 'cinema-s3-upload/posters', Key: req.params.fileName};
   awsS3.getObject(jsonParams, (err, data) => {
     if (err) {
-        throw err;
+      res.json({error: err});
+    } else {
+      res.writeHead(200, { 'Content-Type': contentType });
+      res.end(data.Body, 'utf-8');
+      // // dataURL
+      // let dataURL = "data:image/jpeg;base64," + encode(data.Body);
+  
+      // // blobURL
+      // const blob = new Blob([data.Body], {
+      //     type: data.ContentType
+      // });
+      // const blobURL = URL.createObjectURL(blob);
     }
-    res.writeHead(200, { 'Content-Type': contentType });
-    res.end(data.Body, 'utf-8');
-    // // dataURL
-    // let dataURL = "data:image/jpeg;base64," + encode(data.Body);
-
-    // // blobURL
-    // const blob = new Blob([data.Body], {
-    //     type: data.ContentType
-    // });
-    // const blobURL = URL.createObjectURL(blob);
   });
 });
 
