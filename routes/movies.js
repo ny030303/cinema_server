@@ -47,6 +47,22 @@ router.get('/genore', async (req, res, next) => {
     }
 });
 
+router.get('/keyword', async (req, res, next) => {
+    try {
+        let params = req.query;
+        let sql = "select keyword from ";
+        if(params["key"] == "genore") sql = sql + "movie_genore";
+        else if(params["key"] == "rated") sql = sql + "movie_rated";
+
+        let queryRes = await dbQuery("GET", sql, []);
+        let arr = queryRes.row.map(v => v.keyword.trim());
+        res.json({keywords: arr});
+    } catch (err) {
+        console.log(err);
+        res.json({error: err});
+    }
+});
+
 // get movie (상영중인 영화 + graph -> score 갱신되는 것을 기준으로 구별)
 // SELECT a.*,b.*, c.* FROM `movie` a,
 // `movie_score` b,
@@ -122,7 +138,7 @@ router.get('/rating', async (req, res, next) => {
 
 // get review (like 순)
 router.get('/review', async (req, res, next) => {
-    let sql = "SELECT * FROM `movie_review` WHERE movie_id = ? ORDER BY like_num DESC "; 
+    let sql = "SELECT * FROM `movie_review` WHERE movie_id = ? ORDER BY idx, like_num DESC "; 
     let params = req.query;
     // let params = [req.body.movie_id];
     try {
@@ -230,25 +246,35 @@ router.get('/search', async (req, res, next) => {
     //     )
     // LIMIT 3
     
+    
+    // INSERT INTO movie_rated (keyword) SELECT distinct SUBSTRING_INDEX(SUBSTRING_INDEX(memo, ' | ', -2), ' | ', 1) as keyword FROM cinema.movie where memo like '%관람%';
     router.get('/search/beta', async (req, res, next) => {
         let params = req.query; // req.body.text
         let sql = "SELECT DISTINCT a.* FROM `movie` as a, " +
-            "`movie_genore` as b WHERE " ;
+            "`movie_genore` as b, " +
+            "`movie_rated` as c WHERE " ;
         try {
             if(params["genore"]) {
                 sql = sql + `(a.genore LIKE CONCAT('%', b.keyword , '%')) ` +
                 `AND ( b.keyword = "${params["genore"]}" ) `;
             }
             
+            if(params["rated"]) {
+                let titlesql = `( a.memo like '%${params["rated"]}%' ) ` +
+                `AND ( c.keyword = "${params["rated"]}" ) `;
+                if(!params["genore"]) sql = sql + titlesql;
+                else sql = sql + "AND " + titlesql;
+            }
+
             if(params["title"]) {
                 let titlesql = `( a.title like '${params["title"]}%' ) `;
-                if(!params["genore"]) sql = sql + titlesql;
+                if(!params["genore"] && !params["rated"]) sql = sql + titlesql;
                 else sql = sql + "AND " + titlesql;
             }
 
             if(params["offset"] && params["size"]) {
                 let titlesql = `LIMIT ${params["offset"]}, ${params["size"]} `;
-                if(params["genore"] || params["title"]) sql = sql + titlesql;
+                if(params["genore"] || params["title"] || params["rated"]) sql = sql + titlesql;
                 else res.json({error: "serch 대상이 없음"});
             }
             console.log(sql);

@@ -2,13 +2,13 @@ const mysql = require('mysql2/promise');
 // require('dotenv').config();
 
 // const uri = process.env.ATLAS_URI;
-const db_info = {
-  host: 'localhost',
-  port: '3306',
-  user: 'root',
-  password: '',
-  database: 'cinema'
-}
+// const db_info = {
+//   host: 'localhost',
+//   port: '3306',
+//   user: 'root',
+//   password: '',
+//   database: 'cinema'
+// }
 // const db_info = {
 //   host: 'db',
 //   port: '3306',
@@ -16,6 +16,14 @@ const db_info = {
 //   password: 'root',
 //   database: 'cinema'
 // }
+
+const db_info = {
+  host: '52.78.157.26',
+  port: '8086',
+  user: 'root',
+  password: 'root',
+  database: 'cinema'
+}
 let pool = mysql.createPool(db_info);
 let connection;
 

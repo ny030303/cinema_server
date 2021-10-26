@@ -4,7 +4,7 @@ const path = require('path');
 const AWS = require("aws-sdk"); 
 const dotenv = require('dotenv'); 
 dotenv.config({ path: '../.env' }); 
-
+console.log(process.env);
 const s3 = new AWS.S3({ //AWS SDK 설정 항목 
   accessKeyId: process.env.KEYID, 
   secretAccessKey: process.env.KEY, 
