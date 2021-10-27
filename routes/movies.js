@@ -247,6 +247,7 @@ router.get('/search', async (req, res, next) => {
     // LIMIT 3
     
     
+    const{searchSqlFilter} = require('../controllers/filterController');
     // INSERT INTO movie_rated (keyword) SELECT distinct SUBSTRING_INDEX(SUBSTRING_INDEX(memo, ' | ', -2), ' | ', 1) as keyword FROM cinema.movie where memo like '%관람%';
     router.get('/search/beta', async (req, res, next) => {
         let params = req.query; // req.body.text
@@ -254,37 +255,22 @@ router.get('/search', async (req, res, next) => {
             "`movie_genore` as b, " +
             "`movie_rated` as c WHERE " ;
         try {
-            if(params["genore"]) {
-                sql = sql + `(a.genore LIKE CONCAT('%', b.keyword , '%')) ` +
-                `AND ( b.keyword = "${params["genore"]}" ) `;
+            let searchSqlText = searchSqlFilter(sql, params);
+            console.log(searchSqlText);
+            if(searchSqlText == null) {
+                res.json({error: "serch 대상이 없음"});
+            } else {
+                // console.log(sql);
+                let queryRes = await dbQuery("GET", searchSqlText, params);
+                // console.log(queryRes);
+                res.json({movies: queryRes.row});
             }
-            
-            if(params["rated"]) {
-                let titlesql = `( a.memo like '%${params["rated"]}%' ) ` +
-                `AND ( c.keyword = "${params["rated"]}" ) `;
-                if(!params["genore"]) sql = sql + titlesql;
-                else sql = sql + "AND " + titlesql;
-            }
-
-            if(params["title"]) {
-                let titlesql = `( a.title like '${params["title"]}%' ) `;
-                if(!params["genore"] && !params["rated"]) sql = sql + titlesql;
-                else sql = sql + "AND " + titlesql;
-            }
-
-            if(params["offset"] && params["size"]) {
-                let titlesql = `LIMIT ${params["offset"]}, ${params["size"]} `;
-                if(params["genore"] || params["title"] || params["rated"]) sql = sql + titlesql;
-                else res.json({error: "serch 대상이 없음"});
-            }
-            console.log(sql);
-            let queryRes = await dbQuery("GET", sql, params);
-            // console.log(queryRes);
-            res.json({movies: queryRes.row});
         } catch (err) {
             console.log(err);
             res.json({error: err});
         }
     });
+
+    
 
 module.exports = router;

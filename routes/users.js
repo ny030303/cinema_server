@@ -82,4 +82,34 @@ router.post('/signup', formDataUpload.single('img'), async (req, res, next) => {
 
 // SELECT * FROM movie_review WHERE LENGTH(comment) < 1
 
+
+const{searchSqlFilter} = require('../controllers/filterController');
+router.get('/search', async (req, res, next) => {
+  console.log(req.user);
+  if(req.user) { // 유저 로그인 중
+    let params = req.query; // req.body.text
+    let sql = "SELECT DISTINCT a.* " + 
+        "FROM (SELECT * FROM `movie` WHERE movie_id in(SELECT DISTINCT movie_id FROM `movie_review` WHERE writer = 'testerff')) as a, " +
+        "`movie_genore` as b, " +
+        "`movie_rated` as c WHERE " ;
+    try {
+        let searchSqlText = searchSqlFilter(sql, params);
+        console.log(searchSqlText);
+        if(searchSqlText == null) {
+            res.json({error: "serch 대상이 없음"});
+        } else {
+            // console.log(sql);
+            let queryRes = await dbQuery("GET", searchSqlText, params);
+            // console.log(queryRes);
+            res.json({movies: queryRes.row});
+        }
+    } catch (err) {
+        console.log(err);
+        res.json({error: err});
+    }
+  } else {
+    res.status(201).json({result: 0});
+  }
+});
+
 module.exports = router;

@@ -1,18 +1,5 @@
 // 변경사항 정리 //
-1. offset과 size 값을 주면 맞춰서 limit 되도록
 
-/movies
-/movies/rank
-/movies/rating
-/movies/review?movie_id=[  ]
-/movies/search/beta
-
-2. /movies/genore => 기존 검색기능은 search로 옮길 것 => genore 키워드로 바꿈
-
-3. /movies/search/beta 생성
-
-///////////////
-.../beta/.. => 나중에 이전 기능 지우고 새로 넣을 기능
 
 ///////////////
 
@@ -30,7 +17,7 @@
     ::: get 영화 검색결과 가져오기 ('text%' 로 가져옴)
 
 - /movies/search/beta?title=[ 영화제목 ]&genore=[ 장르 ]&rated=[ 연령등급 ]&offset=[ 어디서 부터 ]&size=[ 얼마나 가져오는지 ]
-    ::: get genore와 title로 맞는 영화의 검색결과 가져오기
+    ::: get genore와 title과 rated로 맞는 영화의 검색결과 가져오기
 
         요청 시 [title 또는 genore 또는 rated]가 필수적으로 필요함 
         페이징 처리시 [offset(어디서 부터 가져올지) 와 size(행을 얼마나 가져올지)]값이 필요함 (선택)
@@ -41,6 +28,23 @@ ex. )     localhost:54000/movies/search?genore=코미&title=xx&offset=1&size=10 
           localhost:54000/movies/search/beta?genore=사극&offset=0&size=5
           localhost:54000/movies/search/beta?rated=12세이상관람가&offset=0&size=5
           localhost:54000/movies/search/beta?title=베놈&genore=액션&rated=15세이상관람가&offset=0&size=5
+
+
+
+- /users/search?title=[ 영화제목 ]&genore=[ 장르 ]&rated=[ 연령등급 ]&offset=[ 어디서 부터 ]&size=[ 얼마나 가져오는지 ]
+    ::: 로그인된 유저가 작성한 리뷰의 영화들 중 get genore와 title과 rated로 맞는 영화의 검색결과 가져오기 
+
+        사용방식은 "/movies/search/beta" 와 같음
+        요청 시 [title 또는 genore 또는 rated]가 필수적으로 필요함 
+        페이징 처리시 [offset(어디서 부터 가져올지) 와 size(행을 얼마나 가져올지)]값이 필요함 (선택)
+
+ex. )     localhost:54000/users/search?genore=코미&title=xx&offset=1&size=10 (순서 상관x)
+          localhost:54000/users/search/beta?title=xx&size=10&genore=코미&offset=0
+          localhost:54000/users/search/beta?title=블랙&offset=0&size=5
+          localhost:54000/users/search/beta?genore=사극&offset=0&size=5
+          localhost:54000/users/search/beta?rated=12세이상관람가&offset=0&size=5
+          localhost:54000/users/search/beta?title=베놈&genore=액션&rated=15세이상관람가&offset=0&size=5
+
 
 === GET 형식 req 필요x [페이징 값(offset, size)를 제외했을 때] ===
 - /
@@ -152,3 +156,4 @@ ex. )     localhost:54000/movies/search?genore=코미&title=xx&offset=1&size=10 
     database 내 movie 테이블 비우고 4번 실행 (처음부터 새로 받기)
 4. 영화 정보 업데이트
 (node .\crawler\movieCrawler\movieCrawler.js)
+
