@@ -2,7 +2,7 @@ var express = require('express');
 const {init: dbInit, dbQuery, getTodayMovies} = require("../controllers/dbController");
 var router = express.Router();
 const fs = require('fs');
-const { formDataUpload } = require('../CommenUtil');
+const { localFormDataUpload, mimeTypes } = require('../CommenUtil');
 const { session } = require('passport');
 // const bcrypt = require('bcrypt');
 // const saltRounds = 10;
@@ -10,6 +10,22 @@ const { session } = require('passport');
 /* GET users listing. */
 router.get('/', function(req, res, next) {
   res.send('respond with a resource');
+});
+
+//192.168.31.31:54000/images/1624430805798_f5b9324a8a5b4c01977419a6e6442ab9.jpg
+router.get('/images/:fileName', function (req, res, next) {
+  // __dirname.split('router')[0] + 'public/uploads/images/' + req.params.fileName
+  let extname = String(req.params.fileName.split('.')[1].toLowerCase()); // ex. jpg, jpeg
+  let contentType = mimeTypes[extname];
+  fs.readFile('public/images/users/' + req.params.fileName, function (err, result) {
+    if (err) {
+      res.status(201).json({result: err});
+    } else {
+      res.writeHead(200, { 'Content-Type': contentType });
+      res.end(result, 'utf-8');
+    }
+  });
+
 });
 
 router.get('/review', async function(req, res, next) {
@@ -21,6 +37,26 @@ router.get('/review', async function(req, res, next) {
         let movieQueryRes = await dbQuery("GET", movieSql, [req.user.id]);
         let reviewQueryRes = await dbQuery("GET", reviewSql, [req.user.id]);
         res.json({movies: movieQueryRes.row, reviews: reviewQueryRes.row});
+    } catch (err) {
+        console.log(err);
+        res.json({error: err});
+    }
+  } else {
+    res.status(201).json({result: 0});
+  }
+});
+/* 5. 유저의 영화 리뷰 movie_id로 따로 나오게
+   6. 페이지네이션 할때 해당 정보의 개수 반환   */
+router.get('/review/one', async function(req, res, next) {
+  console.log(req.user);
+  console.log(req.query.movie_id);
+  if(req.user) { // 유저 로그인 중
+    let movieSql = "SELECT * FROM `movie` WHERE movie_id = ?";
+    let reviewSql = "SELECT * FROM `movie_review` WHERE writer = ? AND movie_id = ?";
+    try {
+        let movieQueryRes = await dbQuery("GET", movieSql, [req.query.movie_id]);
+        let reviewQueryRes = await dbQuery("GET", reviewSql, [req.user.id, req.query.movie_id]);
+        res.json({movie: movieQueryRes.row[0], reviews: reviewQueryRes.row});
     } catch (err) {
         console.log(err);
         res.json({error: err});
@@ -64,11 +100,11 @@ router.post('/uploadBase64', (req, res, next) => {
 
 
 // id, name, pwd, prifile_url (file)
-router.post('/signup', formDataUpload.single('img'), async (req, res, next) => {
+router.post('/signup', localFormDataUpload.single('img'), async (req, res, next) => {
   try {
     console.log(req.file);
     let sql = "INSERT INTO user(id, name, pwd, profile_url) VALUES (?,?,?,?)";
-    let params = [req.body.id, req.body.name, req.body.pwd, req.file.key];
+    let params = [req.body.id, req.body.name, req.body.pwd, req.file.filename];
     // let params = [req.body.id, req.body.name, req.body.pwd, req.file.filename];
     let queryRes = await dbQuery("INSERT", sql, params);
     console.log(queryRes);
@@ -89,7 +125,7 @@ router.get('/search', async (req, res, next) => {
   if(req.user) { // 유저 로그인 중
     let params = req.query; // req.body.text
     let sql = "SELECT DISTINCT a.* " + 
-        "FROM (SELECT * FROM `movie` WHERE movie_id in(SELECT DISTINCT movie_id FROM `movie_review` WHERE writer = 'testerff')) as a, " +
+        "FROM (SELECT * FROM `movie` WHERE movie_id in(SELECT DISTINCT movie_id FROM `movie_review` WHERE writer = "+req.user.id+")) as a, " +
         "`movie_genore` as b, " +
         "`movie_rated` as c WHERE " ;
     try {

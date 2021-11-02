@@ -56,3 +56,7 @@ exports.searchSqlFilter = (sql, params) => {
     resultText = sql;
     return resultText;
 };
+
+exports.makeCountQuery = (sql) => {
+  return "select count(*) 'count_num' from (" + sql + ") temp_name"; 
+};

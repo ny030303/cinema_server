@@ -1,4 +1,26 @@
 // 변경사항 정리 //
+1.  페이징 가능한 요청들에 count=true (GET) 오면 countNum(해당요청 개수) 값 반환
+
+    적용된 url =  /movies
+                /movies/rank
+                /movies/rating
+                /movies/review
+
+    아직 미적용    /movies/search
+                /users/search
+
+    ex. )   localhost:54000/movies?offset=0&size=4&count=true
+            return { "countNum": 3746 }
+            localhost:54000/movies?count=true
+            return { "countNum": 3746 }
+            localhost:54000/movies?offset=0&size=4
+            return { (기존 값 요청 데이터) }
+
+2. - /users/review/one?movie_id=[ 20191951 ] 추가됨
+    ::: movie_id로 유저가 리뷰남긴 정보 가져오기
+
+3. /images/beta/[url] S3 코드를 막고 /images/[url] 코드 넣음
+    aws 연결이 아니면 같은요청이나 다름 없어졌으니 /images/[url] 로 옮기는게 좋음
 
 
 ///////////////
@@ -10,8 +32,32 @@
     ex.) localhost:54000/images/1624430805798_f5b9324a8a5b4c01977419a6e6442ab9.jpg
     ::: get 영화 poster img
 
+- /users/images/[image URL]
+    ex.) localhost:54000/images/1624430805798_f5b9324a8a5b4c01977419a6e6442ab9.jpg
+    ::: get 유저 프로필 img
+
 - /movies/review?movie_id=[ 20191951 ]
     ::: get 영화 리뷰 가져오기 (like 순)
+
+- /users/review/one?movie_id=[ 20191951 ]
+    ::: movie_id로 유저가 리뷰남긴 정보 가져오기
+    ex. )  localhost:54000/users/review/one?movie_id=19848168
+    {
+        "movie": { ... },
+        "reviews": [
+            {
+                "idx": 2,
+                "movie_id": "19848168",
+                "site": "this",
+                "created": "2021-09-10 11:26:40",
+                "writer": "admin",
+                "comment": "text comment",
+                "like_num": 0,
+                "rating_num": 8
+            }
+        ]
+    }
+
 
 - /movies/search?text=[ 검색이름 ]
     ::: get 영화 검색결과 가져오기 ('text%' 로 가져옴)

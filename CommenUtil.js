@@ -3,16 +3,24 @@ exports.getNowDateToYYMMDD =  () => {
   let fomatDate = new Date(d.getTime() - (d.getTimezoneOffset() * 60000)).toISOString();
   return fomatDate.replace("T", " ").slice(0, -5);
 }
-
+exports.mimeTypes = {
+  'png': 'image/png',
+  'jpg': 'image/jpg',
+  'jpeg': 'image/jpeg',
+  'gif': 'image/gif',
+  'wav': 'audio/wav',
+  'mp4': 'video/mp4',
+  'json': 'application/json'
+};
 /* ==== Local ==== */
-// const multer = require('multer');
-// var storage = multer.diskStorage({
-//   destination: function (req, file, cb) {cb(null,'./public/images/users')},
-//   filename: function (req, file, cb) { cb(null, `${Date.now()}_${file.originalname}`) }
-// });
-// exports.formDataUpload = multer({storage: storage});
+var multer = require('multer');
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {cb(null,'./public/images/users')},
+  filename: function (req, file, cb) { cb(null, `${Date.now()}_${file.originalname}`) }
+});
+exports.localFormDataUpload = multer({storage: storage});
 /* ============== */
-const multer = require('multer');
+// const multer = require('multer');
 const multerS3 = require('multer-s3');
 const aws = require('aws-sdk');
 

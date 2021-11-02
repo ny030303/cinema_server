@@ -35,7 +35,7 @@ router.get('/images/:fileName', function (req, res, next) {
   // __dirname.split('router')[0] + 'public/uploads/images/' + req.params.fileName
   let extname = String(req.params.fileName.split('.')[1].toLowerCase()); // ex. jpg, jpeg
   let contentType = mimeTypes[extname];
-  fs.readFile('public/images/uploads/' + req.params.fileName, function (err, result) {
+  fs.readFile('public/images/resized/' + req.params.fileName, function (err, result) {
     if (err) {
       res.status(201).json({result: err});
     } else {
@@ -46,26 +46,44 @@ router.get('/images/:fileName', function (req, res, next) {
 
 });
 
-router.get('/images/beta/:fileName', function (req, res, next) {
-  let extname = String(req.params.fileName.split('.')[1].toLowerCase()); // ex. jpg, jpeg
-  let contentType = mimeTypes[extname];
-  var jsonParams = {Bucket: 'cinema-s3-upload/posters', Key: req.params.fileName};
-  awsS3.getObject(jsonParams, (err, data) => {
-    if (err) {
-      res.json({error: err});
-    } else {
-      res.writeHead(200, { 'Content-Type': contentType });
-      res.end(data.Body, 'utf-8');
-      // // dataURL
-      // let dataURL = "data:image/jpeg;base64," + encode(data.Body);
+// S3 연결시 요청 예시
+// router.get('/images/beta/:fileName', function (req, res, next) {
+//   let extname = String(req.params.fileName.split('.')[1].toLowerCase()); // ex. jpg, jpeg
+//   let contentType = mimeTypes[extname];
+//   var jsonParams = {Bucket: 'cinema-s3-upload/posters', Key: req.params.fileName};
+//   awsS3.getObject(jsonParams, (err, data) => {
+//     if (err) {
+//       res.json({error: err});
+//     } else {
+//       res.writeHead(200, { 'Content-Type': contentType });
+//       res.end(data.Body, 'utf-8');
+//       // // dataURL
+//       // let dataURL = "data:image/jpeg;base64," + encode(data.Body);
   
-      // // blobURL
-      // const blob = new Blob([data.Body], {
-      //     type: data.ContentType
-      // });
-      // const blobURL = URL.createObjectURL(blob);
-    }
-  });
+//       // // blobURL
+//       // const blob = new Blob([data.Body], {
+//       //     type: data.ContentType
+//       // });
+//       // const blobURL = URL.createObjectURL(blob);
+//     }
+//   });
+// });
+
+
+// 아직 이쪽 요청이 와서 우선 위에 beta 아닌 버전을 연결함
+router.get('/images/beta/:fileName', function (req, res, next) {
+   // __dirname.split('router')[0] + 'public/uploads/images/' + req.params.fileName
+   let extname = String(req.params.fileName.split('.')[1].toLowerCase()); // ex. jpg, jpeg
+   let contentType = mimeTypes[extname];
+   fs.readFile('public/images/resized/' + req.params.fileName, function (err, result) {
+     if (err) {
+       res.status(201).json({result: err});
+     } else {
+       res.writeHead(200, { 'Content-Type': contentType });
+       res.end(result, 'utf-8');
+     }
+   });
+ 
 });
 
 module.exports = router;
