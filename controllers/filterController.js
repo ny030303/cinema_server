@@ -31,19 +31,19 @@ exports.searchSqlFilter = (sql, params) => {
     let resultText = null;
     console.log(params);
     if(params["genore"]) {
-        sql = sql + `(a.genore LIKE CONCAT('%', b.keyword , '%')) ` +
+        sql = sql + `(a.genore LIKE CONCAT("%", b.keyword , "%")) ` +
         `AND ( b.keyword = "${params["genore"]}" ) `;
     }
     
     if(params["rated"]) {
-        let titlesql = `( a.memo like '%${params["rated"]}%' ) ` +
+        let titlesql = `( a.memo like "%${params["rated"]}%" ) ` +
         `AND ( c.keyword = "${params["rated"]}" ) `;
         if(!params["genore"]) sql = sql + titlesql;
         else sql = sql + "AND " + titlesql;
     }
 
     if(params["title"]) {
-        let titlesql = `( a.title like '${params["title"]}%' ) `;
+        let titlesql = `( a.title like "${params["title"]}%" ) `;
         if(!params["genore"] && !params["rated"]) sql = sql + titlesql;
         else sql = sql + "AND " + titlesql;
     }

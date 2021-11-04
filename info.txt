@@ -1,18 +1,17 @@
 // 변경사항 정리 //
-1.  페이징 가능한 요청들에 count=true (GET) 오면 countNum(해당요청 개수) 값 반환
+1.  페이징 가능한 요청들에 count=true (GET) 오면 count num(해당요청 개수) 값 반환
 
     적용된 url =  /movies
                 /movies/rank
                 /movies/rating
                 /movies/review
-
-    아직 미적용    /movies/search
+                /movies/search
                 /users/search
 
     ex. )   localhost:54000/movies?offset=0&size=4&count=true
-            return { "countNum": 3746 }
+            return { "count_num": 3746 }
             localhost:54000/movies?count=true
-            return { "countNum": 3746 }
+            return { "count_num": 3746 }
             localhost:54000/movies?offset=0&size=4
             return { (기존 값 요청 데이터) }
 
@@ -22,6 +21,7 @@
 3. /images/beta/[url] S3 코드를 막고 /images/[url] 코드 넣음
     aws 연결이 아니면 같은요청이나 다름 없어졌으니 /images/[url] 로 옮기는게 좋음
 
+4. - /users/edit 추가됨
 
 ///////////////
 
@@ -169,6 +169,14 @@ ex. )     localhost:54000/users/search?genore=코미&title=xx&offset=1&size=10 (
 - /users/signup
     ::: 회원가입 부분 form-data 형식으로 
      id, name, pwd, img(file) 필요 (이름을 지킬 것)
+
+
+- /users/edit
+    ::: 회원정보 수정 form-data 형식으로 
+     changed_pwd 필요 (이름을 지킬 것)
+
+     ex.) 로그인 OFF -> return  {"result": 0}
+        로그인 ON -> return  { "state": true }
 
 
 === PUT 형식 ===
