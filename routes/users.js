@@ -116,8 +116,11 @@ router.post('/signup', localFormDataUpload.single('img'), async (req, res, next)
     // let params = [req.body.id, req.body.name, req.body.pwd, req.file.filename];
     let queryRes = await dbQuery("INSERT", sql, params);
     console.log(queryRes);
-
-    res.json({state: queryRes.state});
+    if(queryRes.state) {
+      res.json({result: {id: req.body.id, name: req.body.name, pwd: req.body.pwd, profile_url: req.file.filename}});
+    } else {
+      res.json({result: false});
+    }
   } catch (error) {
     console.log(error);
   }

@@ -3,6 +3,7 @@
 /public/images/users
 /public/images/resized
 /public/images/*
+
 /config
 # dependencies
 /node_modules
