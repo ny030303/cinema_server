@@ -2,7 +2,8 @@
 /public/images/uploads
 /public/images/users
 /public/images/resized
-/public/images
+/public/images/*
+
 /config
 # dependencies
 /node_modules

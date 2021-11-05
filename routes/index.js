@@ -37,7 +37,15 @@ router.get('/images/:fileName', function (req, res, next) {
   let contentType = mimeTypes[extname];
   fs.readFile('public/images/resized/' + req.params.fileName, function (err, result) {
     if (err) {
-      res.status(201).json({result: err});
+      fs.readFile('public/images/resized/0000000000000_noimage.jpg', function (emptyErr, emptyRes) {
+        if(emptyErr) {
+          res.status(201).json({result: err});
+        } else {
+          res.writeHead(200, { 'Content-Type': 'image/jpg' });
+          res.end(emptyRes, 'utf-8');
+        }
+      });
+      // res.status(201).json({result: err});
     } else {
       res.writeHead(200, { 'Content-Type': contentType });
       res.end(result, 'utf-8');

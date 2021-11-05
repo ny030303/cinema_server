@@ -1,0 +1,19 @@
+{
+  "apps": [
+    {
+      "name": "20211103-saved-cinema server",
+      "cwd": ".",
+      "script": "yarn start",
+      "env": {
+        "PORT":"8080"
+      },
+      "args": [
+      ],
+      "watch": [],
+      "node_args": [],
+      "log_date_format": "YYYY-MM-DD HH:mm Z",
+      "exec_interpreter": "",
+      "exec_mode": "fork"
+    }
+  ]
+}

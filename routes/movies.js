@@ -67,25 +67,35 @@ router.get('/keyword', async (req, res, next) => {
 // where a.movie_id = b.movie_id AND b.movie_id = c.movie_id AND
 // DATE_FORMAT(now(), '%Y-%m-%d')  = left(b.created, 10)
 // order by b.reservation_rate desc
+
+
+/*  => 바꿈
+SELECT a.*, b.*, c.* FROM `movie` a, `movie_score` b 
+left outer join `movie_graph` c on b.movie_id = c.movie_id 
+where a.movie_id = b.movie_id 
+AND DATE_FORMAT(now(), '%Y-%m-%d')  = left(b.created, 10) 
+order by b.reservation_rate desc 
+LIMIT 0, 100 ;
+
+*/
 router.get('/rank', async (req, res, next) => {
-    let sql = "`movie_score` b, " +
-                "`movie_graph` c " +
-                "where a.movie_id = b.movie_id AND b.movie_id = c.movie_id AND "+
-                "DATE_FORMAT(now(), '%Y-%m-%d')  = left(b.created, 10) " +
+    let sql = "left outer join `movie_graph` c on b.movie_id = c.movie_id " +
+                "where a.movie_id = b.movie_id " +
+                "AND DATE_FORMAT(now(), '%Y-%m-%d')  = left(b.created, 10) "+
                 "order by b.reservation_rate desc ";
     let params = req.query;
     try {
         if(params["count"] == "true") {
-            sql = "SELECT a.* FROM `movie` a, " + sql;
+            sql = "SELECT a.* FROM `movie` a, `movie_score` b " + sql;
             let countRes = await dbQuery("GET", makeCountQuery(sql), []);
             res.json({count_num: countRes.row[0].count_num});
         } else {
-            sql = "SELECT a.*, b.*, c.* FROM `movie` a, " + sql;
+            sql = "SELECT c.*, a.*, b.*  FROM `movie` a, `movie_score` b " + sql;
             if(params["offset"] && params["size"]) {
                 sql = sql + `LIMIT ${params["offset"]}, ${params["size"]} `;
             }
             let queryRes = await dbQuery("GET", sql, []);
-            // console.log(queryRes);
+            console.log(queryRes);
             queryRes.row.forEach((el,i) => {
                 el.jqplot_sex = JSON.parse(el.jqplot_sex);
                 el.jqplot_age = JSON.parse(el.jqplot_age);
@@ -277,10 +287,15 @@ router.get('/search', async (req, res, next) => {
             if(searchSqlText == null) {
                 res.json({error: "serch 대상이 없음"});
             } else {
-                // console.log(sql);
-                let queryRes = await dbQuery("GET", searchSqlText, params);
-                // console.log(queryRes);
-                res.json({movies: queryRes.row});
+                if(params["count"] == "true") {
+                    let countRes = await dbQuery("GET", makeCountQuery(searchSqlText), params);
+                    res.json({count_num: countRes.row[0].count_num});
+                } else {
+                    // console.log(sql);
+                    let queryRes = await dbQuery("GET", searchSqlText, params);
+                    // console.log(queryRes);
+                    res.json({movies: queryRes.row});
+                }
             }
         } catch (err) {
             console.log(err);
