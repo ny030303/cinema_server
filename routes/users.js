@@ -19,7 +19,15 @@ router.get('/images/:fileName', function (req, res, next) {
   let contentType = mimeTypes[extname];
   fs.readFile('public/images/users/' + req.params.fileName, function (err, result) {
     if (err) {
-      res.status(201).json({result: err});
+      fs.readFile('public/images/resized/0000000000000_noimage.jpg', function (emptyErr, emptyRes) {
+        if(emptyErr) {
+          res.status(201).json({result: err});
+        } else {
+          res.writeHead(200, { 'Content-Type': 'image/jpg' });
+          res.end(emptyRes, 'utf-8');
+        }
+      });
+      // res.status(201).json({result: err});
     } else {
       res.writeHead(200, { 'Content-Type': contentType });
       res.end(result, 'utf-8');
@@ -108,24 +116,48 @@ router.post('/signup', localFormDataUpload.single('img'), async (req, res, next)
     // let params = [req.body.id, req.body.name, req.body.pwd, req.file.filename];
     let queryRes = await dbQuery("INSERT", sql, params);
     console.log(queryRes);
-
-    res.json({state: queryRes.state});
+    if(queryRes.state) {
+      res.json({result: {id: req.body.id, name: req.body.name, pwd: req.body.pwd, profile_url: req.file.filename}});
+    } else {
+      res.json({result: false});
+    }
   } catch (error) {
     console.log(error);
   }
   
 });
 
+// changed_pwd
+router.post('/edit', localFormDataUpload.none(), async (req, res, next) => {
+  console.log(req.user);
+  if(req.user) { // 유저 로그인 중
+    try {
+      // console.log(req.file);
+      let sql = "UPDATE user SET pwd = ? WHERE id = ?";
+      let params = [req.body.changed_pwd, req.user.id];
+      // let params = [req.body.id, req.body.name, req.body.pwd, req.file.filename];
+      let queryRes = await dbQuery("UPDATE", sql, params);
+      console.log(queryRes);
+
+      res.json({state: queryRes.state});
+    } catch (error) {
+      console.log(error);
+    }
+  } else {
+    res.status(201).json({result: 0});
+  }
+});
+
 // SELECT * FROM movie_review WHERE LENGTH(comment) < 1
 
 
-const{searchSqlFilter} = require('../controllers/filterController');
+const{searchSqlFilter, makeCountQuery} = require('../controllers/filterController');
 router.get('/search', async (req, res, next) => {
   console.log(req.user);
   if(req.user) { // 유저 로그인 중
     let params = req.query; // req.body.text
     let sql = "SELECT DISTINCT a.* " + 
-        "FROM (SELECT * FROM `movie` WHERE movie_id in(SELECT DISTINCT movie_id FROM `movie_review` WHERE writer = "+req.user.id+")) as a, " +
+        `FROM (SELECT * FROM movie WHERE movie_id in(SELECT DISTINCT movie_id FROM movie_review WHERE writer = "${req.user.id}")) as a, ` +
         "`movie_genore` as b, " +
         "`movie_rated` as c WHERE " ;
     try {
@@ -134,10 +166,15 @@ router.get('/search', async (req, res, next) => {
         if(searchSqlText == null) {
             res.json({error: "serch 대상이 없음"});
         } else {
+          if(params["count"] == "true") {
+              let countRes = await dbQuery("GET", makeCountQuery(searchSqlText), params);
+              res.json({count_num: countRes.row[0].count_num});
+          } else {
             // console.log(sql);
             let queryRes = await dbQuery("GET", searchSqlText, params);
             // console.log(queryRes);
             res.json({movies: queryRes.row});
+          }
         }
     } catch (err) {
         console.log(err);
